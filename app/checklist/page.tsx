@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ChecklistItemRow from "@/components/ChecklistItem";
@@ -8,20 +8,118 @@ import ExportEthicsDialog from "@/components/ExportEthicsDialog";
 import QualifyingQuestionnaire from "@/components/QualifyingQuestionnaire";
 import RegulationQuote from "@/components/RegulationQuote";
 import CategoryProgressBar from "@/components/CategoryProgressBar";
+import ClassificationSummary from "@/components/ClassificationSummary";
 import { categories, checklistItems, categoryQuotes, isItemVisible } from "@/lib/checklistData";
 import { useChecklistState } from "@/lib/useChecklistState";
 import { useQualifyingAnswers } from "@/lib/useQualifyingAnswers";
+import {
+  CLASSIFICATION_LABEL,
+  CLASSIFICATION_RESULT_TEXT,
+  INFORMATION_ROLE_LABEL,
+  SEVERITY_LABEL,
+  deriveClassification,
+  deriveEvidenceTier,
+} from "@/lib/classification";
 
 export default function ChecklistPage() {
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const { statusMap, setStatus, resetAll, hydrated } = useChecklistState();
   const {
     answers,
-    setAnswer,
+    submit,
     markCompleted,
     reopen,
     hydrated: qualifyingHydrated,
   } = useQualifyingAnswers();
+
+  // Computed once per render from the questionnaire's answers — see
+  // lib/classification.ts. null while the classification gates haven't
+  // all been answered yet (e.g. the questionnaire was skipped).
+  const classification = useMemo(() => deriveClassification(answers), [answers]);
+  const evidenceTier = useMemo(
+    () => (classification === "SaMD" ? deriveEvidenceTier(answers.informationRole) : null),
+    [classification, answers.informationRole]
+  );
+
+  // "klasifikasi-1" and "klinis-1" ask the reader to work out exactly what
+  // the questionnaire above already determined — once there's a computed
+  // answer, auto-mark them done instead of leaving them sitting at
+  // "Belum Dimulai" with no feedback (per Jo: "kenapa masih ada ini ya?").
+  // Each only fires once per page load, and only while the item is still
+  // at its untouched default, so it never fights a status the person set
+  // by hand afterwards.
+  const autoCompletedClasifikasi = useRef(false);
+  const autoCompletedKlinis = useRef(false);
+
+  useEffect(() => {
+    if (!hydrated || autoCompletedClasifikasi.current) return;
+    if (classification && statusMap["klasifikasi-1"] === "belum") {
+      autoCompletedClasifikasi.current = true;
+      setStatus("klasifikasi-1", "selesai");
+    }
+  }, [classification, hydrated, statusMap, setStatus]);
+
+  useEffect(() => {
+    if (!hydrated || autoCompletedKlinis.current) return;
+    if (classification === "SaMD" && evidenceTier && statusMap["klinis-1"] === "belum") {
+      autoCompletedKlinis.current = true;
+      setStatus("klinis-1", "selesai");
+    }
+  }, [classification, evidenceTier, hydrated, statusMap, setStatus]);
+
+  // Injects the computed result straight into the two items the
+  // questionnaire now answers, instead of leaving them purely
+  // self-directed. Built once per render from the already-computed
+  // classification/evidenceTier above.
+  const itemResultBanners = useMemo(() => {
+    const map: Record<string, React.ReactNode> = {};
+    if (!classification) return map;
+
+    map["klasifikasi-1"] = (
+      <div className="rounded-md border border-brand/30 bg-brand/5 p-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-brand">
+          Hasil dari kuesioner profil produk Anda
+        </p>
+        <p className="mt-1 text-sm font-semibold text-ink">
+          {CLASSIFICATION_LABEL[classification]}
+        </p>
+        <p className="mt-1 text-sm leading-[20px] text-ink-muted">
+          {CLASSIFICATION_RESULT_TEXT[classification]}
+        </p>
+      </div>
+    );
+
+    if (classification === "SaMD" && evidenceTier && answers.severityLevel && answers.informationRole) {
+      map["klinis-1"] = (
+        <div className="rounded-md border border-brand/30 bg-brand/5 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-brand">
+            Hasil dari kuesioner profil produk Anda
+          </p>
+          <p className="mt-1 text-sm text-ink">
+            Tingkat keparahan: <strong>{SEVERITY_LABEL[answers.severityLevel]}</strong> · Peran
+            keluaran: <strong>{INFORMATION_ROLE_LABEL[answers.informationRole]}</strong>
+          </p>
+          <p className="mt-2 text-sm leading-[20px] text-ink-muted">
+            Bukti klinis yang wajib dipenuhi: kajian literatur ilmiah + perbandingan produk
+            sejenis{evidenceTier.trial ? " + hasil uji klinik" : ""}.
+          </p>
+        </div>
+      );
+    } else if (classification !== "SaMD") {
+      map["klinis-1"] = (
+        <div className="rounded-md border border-border-subtle bg-surface-alt p-3">
+          <p className="text-sm leading-[20px] text-ink-muted">
+            Tabel 3.2 berlaku untuk produk yang terklasifikasi sebagai SaMD. Berdasarkan jawaban
+            kuesioner profil produk Anda, produk ini saat ini terklasifikasi sebagai{" "}
+            <strong>{CLASSIFICATION_LABEL[classification]}</strong>, sehingga item ini mungkin
+            tidak berlaku secara langsung.
+          </p>
+        </div>
+      );
+    }
+
+    return map;
+  }, [classification, evidenceTier, answers.severityLevel, answers.informationRole]);
 
   const visibleItems = useMemo(
     () => checklistItems.filter((item) => isItemVisible(item, answers)),
@@ -86,21 +184,18 @@ export default function ChecklistPage() {
         </div>
 
         {showQuestionnaire ? (
-          <QualifyingQuestionnaire
-            initialAnswers={answers}
-            onSubmit={(values) => {
-              setAnswer("usesAi", values.usesAi ?? false);
-              if (values.usesAi) {
-                setAnswer("continuousLearning", values.continuousLearning ?? false);
-                setAnswer("generative", values.generative ?? false);
-              }
-              setAnswer("importLocalValidation", values.importLocalValidation ?? false);
-              markCompleted();
-            }}
-            onSkip={markCompleted}
-          />
+          <QualifyingQuestionnaire initialAnswers={answers} onSubmit={submit} onSkip={markCompleted} />
         ) : (
           <>
+            {classification ? (
+              <ClassificationSummary
+                classification={classification}
+                severityLevel={answers.severityLevel}
+                informationRole={answers.informationRole}
+                evidenceTier={evidenceTier}
+              />
+            ) : null}
+
             <div className="mt-6 flex items-center justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <CategoryProgressBar
@@ -140,6 +235,7 @@ export default function ChecklistPage() {
                           item={item}
                           status={statusMap[item.id] ?? item.defaultStatus}
                           onStatusChange={(status) => setStatus(item.id, status)}
+                          resultBanner={itemResultBanners[item.id]}
                         />
                       ))}
                     </div>

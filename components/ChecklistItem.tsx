@@ -11,6 +11,12 @@ type Props = {
   item: ChecklistItemType;
   status: ChecklistStatus;
   onStatusChange: (status: ChecklistStatus) => void;
+  // Optional computed-result block injected for specific items whose
+  // content the qualifying questionnaire can now answer directly (e.g.
+  // klasifikasi-1's SaMD/SiMD result, klinis-1's evidence tier) — see
+  // app/checklist/page.tsx, which builds this from the questionnaire's
+  // answers rather than leaving these items purely self-directed.
+  resultBanner?: React.ReactNode;
 };
 
 const STATUS_OPTIONS: { value: ChecklistStatus; label: string }[] = [
@@ -19,7 +25,7 @@ const STATUS_OPTIONS: { value: ChecklistStatus; label: string }[] = [
   { value: "selesai", label: "Selesai" },
 ];
 
-export default function ChecklistItem({ item, status, onStatusChange }: Props) {
+export default function ChecklistItem({ item, status, onStatusChange, resultBanner }: Props) {
   const [open, setOpen] = useState(false);
   const { isChecked, toggleStep } = useBreakdownState();
 
@@ -31,6 +37,22 @@ export default function ChecklistItem({ item, status, onStatusChange }: Props) {
   const hasActionableBreakdown = Boolean(
     item.breakdown?.some((step) => step.actionable !== false)
   );
+
+  // How many of the breakdown's actionable sub-steps are checked, so
+  // there's a visible "3/5 selesai" signal even while the item is
+  // collapsed — the status dropdown alone doesn't track this, which is
+  // exactly what Jo flagged as missing.
+  let breakdownProgress: { done: number; total: number } | null = null;
+  if (item.breakdown) {
+    let total = 0;
+    let done = 0;
+    item.breakdown.forEach((step, i) => {
+      if (step.actionable === false) return;
+      total += 1;
+      if (isChecked(item.id, i)) done += 1;
+    });
+    if (total > 0) breakdownProgress = { done, total };
+  }
 
   return (
     <div className="rounded-lg border border-border-subtle bg-surface">
@@ -67,6 +89,17 @@ export default function ChecklistItem({ item, status, onStatusChange }: Props) {
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <StatusPill status={status} />
+            {breakdownProgress ? (
+              <span
+                className={`text-xs font-semibold ${
+                  breakdownProgress.done === breakdownProgress.total
+                    ? "text-status-done-text"
+                    : "text-ink-muted"
+                }`}
+              >
+                {breakdownProgress.done}/{breakdownProgress.total} langkah selesai
+              </span>
+            ) : null}
             <select
               value={status}
               onChange={(e) => onStatusChange(e.target.value as ChecklistStatus)}
@@ -84,6 +117,8 @@ export default function ChecklistItem({ item, status, onStatusChange }: Props) {
           {open ? (
             <div className="mt-3 space-y-3 border-t border-border-subtle pt-3">
               <p className="text-sm leading-[22px] text-ink-muted">{item.explanation}</p>
+
+              {resultBanner}
 
               {item.breakdown && item.breakdown.length > 0 ? (
                 <div className="rounded-md border border-border-subtle bg-surface-alt p-3">

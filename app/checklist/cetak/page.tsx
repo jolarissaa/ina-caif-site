@@ -13,7 +13,16 @@ import {
 import { useChecklistState } from "@/lib/useChecklistState";
 import { useEthicsContext } from "@/lib/useEthicsContext";
 import { useQualifyingAnswers } from "@/lib/useQualifyingAnswers";
+import { useBreakdownState } from "@/lib/useBreakdownState";
 import StatusPill from "@/components/StatusPill";
+import {
+  CLASSIFICATION_LABEL,
+  CLASSIFICATION_RESULT_TEXT,
+  INFORMATION_ROLE_LABEL,
+  SEVERITY_LABEL,
+  deriveClassification,
+  deriveEvidenceTier,
+} from "@/lib/classification";
 
 // Printable, single-column view meant to be opened and saved as PDF via the
 // browser's own Print dialog. No navigation chrome; the .no-print class
@@ -33,10 +42,15 @@ function ChecklistCetakContent() {
   const { statusMap, hydrated } = useChecklistState();
   const { context } = useEthicsContext();
   const { answers } = useQualifyingAnswers();
+  const { isChecked } = useBreakdownState();
   const searchParams = useSearchParams();
   const includeEthicsContext = searchParams.get("etik") === "1";
 
   const visibleItems = checklistItems.filter((item) => isItemVisible(item, answers));
+
+  const classification = deriveClassification(answers);
+  const evidenceTier =
+    classification === "SaMD" ? deriveEvidenceTier(answers.informationRole) : null;
 
   const hasContext =
     includeEthicsContext &&
@@ -73,6 +87,28 @@ function ChecklistCetakContent() {
           Dicetak pada {new Date().toLocaleDateString("id-ID", { dateStyle: "long" })}
         </p>
       </header>
+
+      {classification ? (
+        <section className="mt-6 border-b border-border-subtle pb-6">
+          <h2 className="font-display text-lg font-semibold text-ink">
+            Hasil Kuesioner Profil Produk
+          </h2>
+          <p className="mt-2 text-sm leading-[22px] text-ink">
+            Klasifikasi: <strong>{CLASSIFICATION_LABEL[classification]}</strong>
+          </p>
+          <p className="mt-1 text-sm leading-[22px] text-ink-muted">
+            {CLASSIFICATION_RESULT_TEXT[classification]}
+          </p>
+          {classification === "SaMD" && evidenceTier && answers.severityLevel && answers.informationRole ? (
+            <p className="mt-2 text-sm leading-[22px] text-ink">
+              Tingkat keparahan: <strong>{SEVERITY_LABEL[answers.severityLevel]}</strong> · Peran
+              keluaran: <strong>{INFORMATION_ROLE_LABEL[answers.informationRole]}</strong> · Bukti
+              klinis wajib: kajian literatur + perbandingan produk sejenis
+              {evidenceTier.trial ? " + hasil uji klinik" : ""}.
+            </p>
+          ) : null}
+        </section>
+      ) : null}
 
       {hasContext ? (
         <section className="mt-6 border-b border-border-subtle pb-6">
@@ -119,11 +155,27 @@ function ChecklistCetakContent() {
                 </p>
               ) : null}
               <ul className="mt-3 space-y-3">
-                {itemsInCategory.map((item) => (
+                {itemsInCategory.map((item) => {
+                  const actionableCount =
+                    item.breakdown?.filter((step) => step.actionable !== false).length ?? 0;
+                  const doneCount =
+                    item.breakdown?.reduce(
+                      (count, step, i) =>
+                        step.actionable !== false && isChecked(item.id, i) ? count + 1 : count,
+                      0
+                    ) ?? 0;
+                  return (
                   <li key={item.id} className="border-t border-border-subtle pt-3">
                     <div className="flex items-start justify-between gap-3">
                       <p className="text-sm leading-[22px] text-ink">{item.title}</p>
-                      <StatusPill status={statusMap[item.id] ?? item.defaultStatus} />
+                      <div className="flex flex-shrink-0 items-center gap-2">
+                        {actionableCount > 0 ? (
+                          <span className="text-xs font-medium text-ink-muted">
+                            {doneCount}/{actionableCount} langkah
+                          </span>
+                        ) : null}
+                        <StatusPill status={statusMap[item.id] ?? item.defaultStatus} />
+                      </div>
                     </div>
                     <p className="mt-1 text-sm leading-[22px] text-ink-muted">
                       {item.explanation}
@@ -135,7 +187,7 @@ function ChecklistCetakContent() {
                       <ul className="mt-2 space-y-1 border-l border-border-subtle pl-3">
                         {item.breakdown.map((step, i) => (
                           <li key={i} className="text-xs leading-[18px] text-ink-muted">
-                            {step.actionable === false ? "– " : "☐ "}
+                            {step.actionable === false ? "– " : isChecked(item.id, i) ? "☑ " : "☐ "}
                             {step.text}
                             {step.source ? ` (Sumber: ${step.source.label})` : ""}
                           </li>
@@ -143,7 +195,8 @@ function ChecklistCetakContent() {
                       </ul>
                     ) : null}
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             </section>
           );
