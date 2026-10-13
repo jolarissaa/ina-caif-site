@@ -7,14 +7,12 @@ import ChecklistItemRow from "@/components/ChecklistItem";
 import ExportEthicsDialog from "@/components/ExportEthicsDialog";
 import QualifyingQuestionnaire from "@/components/QualifyingQuestionnaire";
 import RegulationQuote from "@/components/RegulationQuote";
+import CategoryProgressBar from "@/components/CategoryProgressBar";
 import { categories, checklistItems, categoryQuotes, isItemVisible } from "@/lib/checklistData";
 import { useChecklistState } from "@/lib/useChecklistState";
 import { useQualifyingAnswers } from "@/lib/useQualifyingAnswers";
 
-const ALL_CATEGORY = "semua";
-
 export default function ChecklistPage() {
-  const [activeCategory, setActiveCategory] = useState<string>(ALL_CATEGORY);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const { statusMap, setStatus, resetAll, hydrated } = useChecklistState();
   const {
@@ -30,6 +28,10 @@ export default function ChecklistPage() {
     [answers]
   );
 
+  // Every category with at least one visible item is always rendered, in
+  // order — there's no more "pick one category to show" state. The
+  // CategoryProgressBar below gives the quick-jump/overview function the
+  // old pill buttons served, without hiding the rest of the page.
   const categoriesWithVisibleItems = useMemo(
     () =>
       categories.filter((category) =>
@@ -37,11 +39,6 @@ export default function ChecklistPage() {
       ),
     [visibleItems]
   );
-
-  const visibleCategoriesToRender = useMemo(() => {
-    if (activeCategory === ALL_CATEGORY) return categoriesWithVisibleItems;
-    return categoriesWithVisibleItems.filter((category) => category.id === activeCategory);
-  }, [activeCategory, categoriesWithVisibleItems]);
 
   const progress = useMemo(() => {
     const total = visibleItems.length;
@@ -104,49 +101,31 @@ export default function ChecklistPage() {
           />
         ) : (
           <>
-            <div className="no-print mt-8 flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setActiveCategory(ALL_CATEGORY)}
-                className={`rounded-pill px-4 py-1.5 text-sm font-medium ${
-                  activeCategory === ALL_CATEGORY
-                    ? "bg-brand text-on-brand"
-                    : "border border-border-subtle text-ink-muted hover:border-brand hover:text-brand"
-                }`}
-              >
-                Semua
-              </button>
-              {categoriesWithVisibleItems.map((category) => (
-                <button
-                  key={category.id}
-                  type="button"
-                  onClick={() => setActiveCategory(category.id)}
-                  className={`rounded-pill px-4 py-1.5 text-sm font-medium ${
-                    activeCategory === category.id
-                      ? "bg-brand text-on-brand"
-                      : "border border-border-subtle text-ink-muted hover:border-brand hover:text-brand"
-                  }`}
-                >
-                  {category.name}
-                </button>
-              ))}
+            <div className="mt-6 flex items-center justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <CategoryProgressBar
+                  categories={categoriesWithVisibleItems}
+                  visibleItems={visibleItems}
+                  statusMap={statusMap}
+                />
+              </div>
               <button
                 type="button"
                 onClick={reopen}
-                className="ml-auto text-xs font-medium text-ink-muted underline-offset-2 hover:text-brand hover:underline"
+                className="no-print flex-shrink-0 text-xs font-medium text-ink-muted underline-offset-2 hover:text-brand hover:underline"
               >
                 Ubah jawaban profil produk
               </button>
             </div>
 
             <div className="mt-8 space-y-10">
-              {visibleCategoriesToRender.map((category) => {
+              {categoriesWithVisibleItems.map((category) => {
                 const itemsInCategory = visibleItems.filter(
                   (item) => item.categoryId === category.id
                 );
                 const quote = categoryQuotes[category.id];
                 return (
-                  <section key={category.id}>
+                  <section key={category.id} id={category.id} className="scroll-mt-20">
                     <h2 className="font-display text-lg font-semibold text-ink">
                       {category.name}
                     </h2>

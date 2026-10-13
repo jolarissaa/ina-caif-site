@@ -9,48 +9,123 @@ type Source = {
   free: boolean;
 };
 
-const SOURCES: Source[] = [
+// Every external source the checklist branches out to (per item citations
+// and the breakdown steps in lib/checklistData.ts), gathered in one place
+// so a reader can download or open any of them directly — not a search
+// page — without having to find the right checklist item first. Grouped
+// by body, matching the colour-coded SourceBadge kinds used elsewhere.
+const SOURCE_GROUPS: { heading: string; sources: Source[] }[] = [
   {
-    name: "Permenkes No. 24 Tahun 2022",
-    description: "Pengelolaan rekam medis, termasuk rekam medis elektronik.",
-    url: "https://jdih.kemkes.go.id/search?q=Permenkes%2024%20Tahun%202022",
-    free: true,
+    heading: "Regulasi & Undang-Undang Indonesia",
+    sources: [
+      {
+        name: "Permenkes No. 24 Tahun 2022",
+        description: "Pengelolaan rekam medis, termasuk rekam medis elektronik.",
+        url: "https://jdih.kemkes.go.id/common/dokumen/2022permenkes024.pdf",
+        free: true,
+      },
+      {
+        name: "UU No. 27 Tahun 2022",
+        description:
+          "Pelindungan Data Pribadi — dasar hukum pemrosesan data pasien, termasuk 6 dasar pemrosesan yang sah dan hak subjek data.",
+        url: "https://peraturan.bpk.go.id/Details/229798/uu-no-27-tahun-2022",
+        free: true,
+      },
+    ],
   },
   {
-    name: "UU No. 27 Tahun 2022",
-    description: "Pelindungan Data Pribadi, menjadi dasar hukum pemrosesan data pasien.",
-    url: "https://jdih.kemkes.go.id/search?q=UU%2027%20Tahun%202022",
-    free: true,
+    heading: "WHO",
+    sources: [
+      {
+        name: "WHO — Generating Evidence for AI-Based Medical Devices (2021)",
+        description:
+          "Kerangka bukti klinis dan evaluasi untuk perangkat medis berbasis AI — dipakai sebagai rujukan tambahan untuk memahami Dokumen Bukti Klinis.",
+        url: "https://www.who.int/publications/i/item/9789240038462",
+        free: true,
+      },
+      {
+        name: "WHO — Ethics and Governance of AI for Health: Large Multi-Modal Models",
+        description: "Panduan etika WHO untuk model AI generatif/LMM di bidang kesehatan.",
+        url: "https://www.who.int/publications-detail-redirect/9789240084759",
+        free: true,
+      },
+    ],
   },
   {
-    name: "WHO — Generating Evidence for AI-Based Medical Devices (2021)",
-    description: "Panduan WHO mengenai bukti klinis dan evaluasi untuk perangkat medis berbasis AI.",
-    url: "https://www.who.int/publications/i/item/9789240029200",
-    free: true,
+    heading: "FDA (Amerika Serikat)",
+    sources: [
+      {
+        name: "FDA — Predetermined Change Control Plan (Final Guidance, Des 2024)",
+        description:
+          "Struktur dokumentasi perubahan model AI pascapenerapan — rujukan tambahan untuk continuous machine learning.",
+        url: "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial",
+        free: true,
+      },
+      {
+        name: "FDA — AI-Enabled Device Software Functions: Lifecycle Management (Draft Guidance)",
+        description: "Rekomendasi siklus hidup dan pengajuan pemasaran untuk software berbasis AI.",
+        url: "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/artificial-intelligence-enabled-device-software-functions-lifecycle-management-and-marketing",
+        free: true,
+      },
+      {
+        name: "FDA — Considerations for the Regulation of Generative AI-Enabled Medical Devices",
+        description: "Discussion paper FDA tentang risiko khas model generatif/LLM, termasuk halusinasi.",
+        url: "https://www.fda.gov/medical-devices/digital-health-center-excellence/considerations-regulation-generative-ai-enabled-medical-devices-discussion-paper-and-request",
+        free: true,
+      },
+    ],
   },
   {
-    name: "FDA — Predetermined Change Control Plan Guidance (2025)",
-    description: "Panduan FDA untuk perencanaan perubahan model AI yang terkendali dan dapat diaudit.",
-    url: "https://www.fda.gov/regulatory-information/search-fda-guidance-documents",
-    free: true,
+    heading: "IMDRF",
+    sources: [
+      {
+        name: "IMDRF N12 — SaMD: Possible Framework for Risk Categorization",
+        description:
+          "Contoh terpandu untuk mengkategorikan risiko SaMD — bantu mengisi kekosongan Tabel 3.2 KMK yang tak diberi contoh.",
+        url: "https://imdrf.org/sites/default/files/docs/imdrf/final/technical/imdrf-tech-140918-samd-framework-risk-categorization-141013.pdf",
+        free: true,
+      },
+    ],
   },
   {
-    name: "ISO 14971:2019",
-    description: "Standar manajemen risiko untuk perangkat medis sepanjang siklus hidupnya.",
-    url: "https://www.iso.org/search.html?q=ISO%2014971",
-    free: false,
+    heading: "Pedoman Etik Penelitian Kesehatan",
+    sources: [
+      {
+        name: "KEPKN — Buku Pedoman dan Standar Etik Penelitian dan Pengembangan Kesehatan Nasional",
+        description: "Pedoman etik penelitian kesehatan nasional dari Kemenkes, relevan untuk konteks tim etik.",
+        url: "https://kepkn.kemkes.go.id/assets/img/keppkn/file/BUKU_PEDOMAN_DAN_STANDAR_ETIK_PENELITIAN_DAN_PENGEMBANGAN_KESEHATAN_NASIONAL(KEPKN).pdf",
+        free: true,
+      },
+      {
+        name: "CIOMS — International Ethical Guidelines for Health-related Research (2016)",
+        description: "Pedoman etik penelitian kesehatan internasional yang banyak dirujuk KEPK di Indonesia.",
+        url: "https://www.paho.org/en/documents/international-ethical-guidelines-health-related-research-involving-humans",
+        free: true,
+      },
+    ],
   },
   {
-    name: "IEC 62304:2006+AMD1:2015",
-    description: "Standar siklus hidup perangkat lunak untuk perangkat medis.",
-    url: "https://www.iso.org/search.html?q=IEC%2062304",
-    free: false,
-  },
-  {
-    name: "ISO 13485:2016",
-    description: "Standar sistem manajemen mutu untuk perangkat medis.",
-    url: "https://www.iso.org/search.html?q=ISO%2013485",
-    free: false,
+    heading: "Standar ISO / IEC (berbayar)",
+    sources: [
+      {
+        name: "ISO 14971:2019",
+        description: "Standar manajemen risiko untuk perangkat medis sepanjang siklus hidupnya.",
+        url: "https://www.iso.org/standard/72704.html",
+        free: false,
+      },
+      {
+        name: "IEC 62304:2006+AMD1:2015",
+        description: "Standar siklus hidup perangkat lunak untuk perangkat medis.",
+        url: "https://webstore.iec.ch/publication/22794",
+        free: false,
+      },
+      {
+        name: "ISO 13485:2016",
+        description: "Standar sistem manajemen mutu untuk perangkat medis.",
+        url: "https://www.iso.org/standard/59752.html",
+        free: false,
+      },
+    ],
   },
 ];
 
@@ -89,23 +164,37 @@ export default function RegulasiPage() {
         <p className="mt-10 text-xs font-semibold uppercase tracking-wide text-ink-muted">
           Sumber Lain
         </p>
-        <div className="mt-3 divide-y divide-border-subtle rounded-lg border border-border-subtle bg-surface">
-          {SOURCES.map((source) => (
-            <a
-              key={source.name}
-              href={source.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-start justify-between gap-4 p-5 hover:bg-surface-alt"
-            >
-              <div>
-                <p className="text-sm font-semibold text-ink">{source.name}</p>
-                <p className="mt-1 text-sm leading-[20px] text-ink-muted">{source.description}</p>
+        <p className="mt-1 max-w-xl text-sm leading-[20px] text-ink-muted">
+          Sumber di bawah dikelompokkan per lembaga/standar, sesuai badge warna yang muncul di
+          setiap butir checklist yang merujuknya.
+        </p>
+
+        <div className="mt-4 space-y-6">
+          {SOURCE_GROUPS.map((group) => (
+            <div key={group.heading}>
+              <p className="text-xs font-semibold text-ink">{group.heading}</p>
+              <div className="mt-2 divide-y divide-border-subtle rounded-lg border border-border-subtle bg-surface">
+                {group.sources.map((source) => (
+                  <a
+                    key={source.name}
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-start justify-between gap-4 p-5 hover:bg-surface-alt"
+                  >
+                    <div>
+                      <p className="text-sm font-semibold text-ink">{source.name}</p>
+                      <p className="mt-1 text-sm leading-[20px] text-ink-muted">
+                        {source.description}
+                      </p>
+                    </div>
+                    <span className="mt-1 flex-shrink-0 rounded-sm bg-surface-alt px-2 py-0.5 text-[11px] font-semibold text-ink-muted">
+                      {source.free ? "Bebas diakses" : "Berbayar"}
+                    </span>
+                  </a>
+                ))}
               </div>
-              <span className="mt-1 flex-shrink-0 rounded-sm bg-surface-alt px-2 py-0.5 text-[11px] font-semibold text-ink-muted">
-                {source.free ? "Bebas diakses" : "Berbayar"}
-              </span>
-            </a>
+            </div>
           ))}
         </div>
       </main>

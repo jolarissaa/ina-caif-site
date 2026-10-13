@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FeatureCard from "@/components/FeatureCard";
@@ -33,20 +32,6 @@ export default function HomePage() {
             edar. INA-CAIF menyusun persyaratan tersebut menjadi checklist yang bisa langsung
             digunakan.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/checklist"
-              className="rounded-md bg-brand px-5 py-3 text-sm font-semibold text-on-brand hover:bg-brand-dark"
-            >
-              Mulai Compliance Checker
-            </Link>
-            <Link
-              href="/regulasi"
-              className="rounded-md border border-border-subtle bg-surface px-5 py-3 text-sm font-semibold text-ink hover:border-brand hover:text-brand"
-            >
-              Lihat Pustaka Regulasi
-            </Link>
-          </div>
         </section>
 
         <section className="mx-auto max-w-content px-6 pb-16">
@@ -70,6 +55,36 @@ export default function HomePage() {
               accent="accent"
             />
           </div>
+
+          <details className="group mt-4 rounded-md border border-border-subtle bg-surface-alt px-4 py-3">
+            <summary className="cursor-pointer text-xs font-medium text-ink-muted hover:text-brand">
+              Ingin mengganti gambar di atas dengan milik Anda sendiri?
+            </summary>
+            <div className="mt-2 space-y-1 text-xs leading-[18px] text-ink-muted">
+              <p>
+                Taruh file gambar dengan nama persis berikut di folder{" "}
+                <code className="rounded-sm bg-surface px-1 py-0.5">public/images/</code> pada
+                proyek — gambar akan otomatis menggantikan placeholder di atas, tanpa perlu ubah
+                kode apa pun:
+              </p>
+              <ul className="ml-4 list-disc space-y-0.5">
+                <li>
+                  <code className="rounded-sm bg-surface px-1 py-0.5">checklist-preview.png</code>{" "}
+                  (atau <code className="rounded-sm bg-surface px-1 py-0.5">.jpg</code>) — untuk
+                  kartu Compliance Checker
+                </li>
+                <li>
+                  <code className="rounded-sm bg-surface px-1 py-0.5">pustaka-preview.png</code>{" "}
+                  (atau <code className="rounded-sm bg-surface px-1 py-0.5">.jpg</code>) — untuk
+                  kartu Pustaka Regulasi
+                </li>
+              </ul>
+              <p>
+                Rasio yang disarankan: 16:10. Setelah file ditambahkan, commit dan push seperti
+                biasa — gambarnya langsung muncul.
+              </p>
+            </div>
+          </details>
         </section>
 
         <section className="border-y border-border-subtle bg-surface-alt">

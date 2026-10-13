@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChecklistItem as ChecklistItemType, ChecklistStatus } from "@/lib/checklistData";
 import StatusPill from "./StatusPill";
 import CitationChip from "./CitationChip";
+import SourceBadge from "./SourceBadge";
 
 type Props = {
   item: ChecklistItemType;
@@ -70,6 +71,28 @@ export default function ChecklistItem({ item, status, onStatusChange }: Props) {
           {open ? (
             <div className="mt-3 space-y-3 border-t border-border-subtle pt-3">
               <p className="text-sm leading-[22px] text-ink-muted">{item.explanation}</p>
+
+              {item.breakdown && item.breakdown.length > 0 ? (
+                <div className="rounded-md border border-border-subtle bg-surface-alt p-3">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
+                    Rincian teknis
+                  </p>
+                  <ol className="mt-2 space-y-2.5">
+                    {item.breakdown.map((step, i) => (
+                      <li key={i} className="text-sm leading-[20px] text-ink">
+                        <span className="text-ink-muted">{i + 1}. </span>
+                        {step.text}
+                        {step.source ? (
+                          <div className="mt-1.5">
+                            <SourceBadge {...step.source} />
+                          </div>
+                        ) : null}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              ) : null}
+
               <CitationChip label={item.citationLabel} type={item.citationType} url={item.citationUrl} />
             </div>
           ) : null}

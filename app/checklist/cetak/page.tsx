@@ -131,6 +131,16 @@ function ChecklistCetakContent() {
                     <p className="mt-1 text-xs font-medium text-ink-muted">
                       Rujukan: {item.citationLabel}
                     </p>
+                    {item.breakdown && item.breakdown.length > 0 ? (
+                      <ol className="mt-2 space-y-1 border-l border-border-subtle pl-3">
+                        {item.breakdown.map((step, i) => (
+                          <li key={i} className="text-xs leading-[18px] text-ink-muted">
+                            {i + 1}. {step.text}
+                            {step.source ? ` (Sumber: ${step.source.label})` : ""}
+                          </li>
+                        ))}
+                      </ol>
+                    ) : null}
                   </li>
                 ))}
               </ul>
