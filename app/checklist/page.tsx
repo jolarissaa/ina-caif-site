@@ -32,7 +32,7 @@ export default function ChecklistPage() {
       <main className="mx-auto max-w-content px-6 py-12">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="font-display text-2xl font-bold text-ink">Checklist Kepatuhan</h1>
+            <h1 className="font-display text-2xl font-bold text-ink">Compliance Checker</h1>
             <p className="mt-2 max-w-xl text-sm leading-[22px] text-ink-muted">
               Tandai setiap butir sesuai kondisi sistem Anda saat ini. Buka setiap butir untuk
               membaca penjelasan dan sumber rujukannya.

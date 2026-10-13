@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import FeatureCard from "@/components/FeatureCard";
 
 const STANDARDS = [
   "Kemenkes",
@@ -37,7 +38,7 @@ export default function HomePage() {
               href="/checklist"
               className="rounded-md bg-brand px-5 py-3 text-sm font-semibold text-on-brand hover:bg-brand-dark"
             >
-              Mulai Checklist
+              Mulai Compliance Checker
             </Link>
             <Link
               href="/regulasi"
@@ -45,6 +46,29 @@ export default function HomePage() {
             >
               Lihat Pustaka Regulasi
             </Link>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-content px-6 pb-16">
+          <div className="grid gap-6 sm:grid-cols-2">
+            <FeatureCard
+              href="/checklist"
+              title="Compliance Checker"
+              description="Susuri persyaratan izin edar, manajemen risiko, hingga etika AI sebagai butir-butir yang bisa ditandai, lengkap dengan sitasi ke regulasi aslinya."
+              linkLabel="Mulai Compliance Checker"
+              imageSrc="/images/checklist-preview.png"
+              imageAlt="Pratinjau halaman Compliance Checker INA-CAIF"
+              accent="brand"
+            />
+            <FeatureCard
+              href="/regulasi"
+              title="Pustaka Regulasi"
+              description="Telusuri regulasi dan standar yang menjadi dasar checklist, termasuk teks lengkap KMK 951/2026 beserta sumber lain yang relevan."
+              linkLabel="Buka pustaka"
+              imageSrc="/images/pustaka-preview.png"
+              imageAlt="Pratinjau halaman Pustaka Regulasi INA-CAIF"
+              accent="accent"
+            />
           </div>
         </section>
 

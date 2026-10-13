@@ -10,11 +10,11 @@ type Props = {
 // directly. Paywalled standards (ISO) are cited by name and linked only to
 // the catalog/search page, never to a mirrored copy of the clause text.
 export default function CitationChip({ label, type, url }: Props) {
+  const isInternal = url.startsWith("/");
   return (
     <a
       href={url}
-      target="_blank"
-      rel="noopener noreferrer"
+      {...(isInternal ? {} : { target: "_blank", rel: "noopener noreferrer" })}
       className="inline-flex items-center gap-1.5 rounded-md border border-border-subtle bg-surface-alt px-2.5 py-1 text-[12px] font-medium text-ink-muted hover:border-brand hover:text-brand"
     >
       <span>{label}</span>

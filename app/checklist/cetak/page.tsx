@@ -61,7 +61,7 @@ function ChecklistCetakContent() {
           INA-CAIF
         </p>
         <h1 className="mt-2 font-display text-2xl font-bold text-ink">
-          Ringkasan Checklist Kepatuhan
+          Ringkasan Compliance Checker
         </h1>
         <p className="mt-1 text-sm text-ink-muted">
           Dicetak pada {new Date().toLocaleDateString("id-ID", { dateStyle: "long" })}

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -9,12 +10,6 @@ type Source = {
 };
 
 const SOURCES: Source[] = [
-  {
-    name: "KMK No. HK.01.07/MENKES/951/2026",
-    description: "Klasifikasi dan jalur registrasi alat kesehatan elektronik, termasuk software berbasis AI.",
-    url: "https://jdih.kemkes.go.id/search?q=HK.01.07%2FMENKES%2F951%2F2026",
-    free: true,
-  },
   {
     name: "Permenkes No. 24 Tahun 2022",
     description: "Pengelolaan rekam medis, termasuk rekam medis elektronik.",
@@ -70,7 +65,31 @@ export default function RegulasiPage() {
           dan hanya dapat ditautkan ke halaman pencarian resmi ISO, bukan ke isi klausulnya.
         </p>
 
-        <div className="mt-8 divide-y divide-border-subtle rounded-lg border border-border-subtle bg-surface">
+        <Link
+          href="/regulasi/kmk-951-2026"
+          className="mt-8 flex items-center justify-between gap-4 rounded-lg border border-brand bg-brand/5 p-6 hover:bg-brand/10"
+        >
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-brand">
+              Teks Lengkap
+            </p>
+            <p className="mt-1 font-display text-lg font-semibold text-ink">
+              KMK No. HK.01.07/MENKES/951/2026
+            </p>
+            <p className="mt-1 max-w-xl text-sm leading-[20px] text-ink-muted">
+              Pedoman Izin Edar Alat Kesehatan Berbasis Perangkat Lunak, teks lengkap per Bab
+              dengan navigasi cepat — tidak perlu membuka dokumen lain.
+            </p>
+          </div>
+          <span aria-hidden className="flex-shrink-0 text-xl text-brand">
+            →
+          </span>
+        </Link>
+
+        <p className="mt-10 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+          Sumber Lain
+        </p>
+        <div className="mt-3 divide-y divide-border-subtle rounded-lg border border-border-subtle bg-surface">
           {SOURCES.map((source) => (
             <a
               key={source.name}
