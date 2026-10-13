@@ -6,10 +6,13 @@ import { useSearchParams } from "next/navigation";
 import {
   categories,
   checklistItems,
+  categoryQuotes,
   getOpenIssuesSummary,
+  isItemVisible,
 } from "@/lib/checklistData";
 import { useChecklistState } from "@/lib/useChecklistState";
 import { useEthicsContext } from "@/lib/useEthicsContext";
+import { useQualifyingAnswers } from "@/lib/useQualifyingAnswers";
 import StatusPill from "@/components/StatusPill";
 
 // Printable, single-column view meant to be opened and saved as PDF via the
@@ -29,8 +32,11 @@ export default function ChecklistCetakPage() {
 function ChecklistCetakContent() {
   const { statusMap, hydrated } = useChecklistState();
   const { context } = useEthicsContext();
+  const { answers } = useQualifyingAnswers();
   const searchParams = useSearchParams();
   const includeEthicsContext = searchParams.get("etik") === "1";
+
+  const visibleItems = checklistItems.filter((item) => isItemVisible(item, answers));
 
   const hasContext =
     includeEthicsContext &&
@@ -87,7 +93,7 @@ function ChecklistCetakContent() {
             </div>
           ) : null}
           <p className="mt-3 text-sm leading-[22px] text-ink">
-            {hydrated ? getOpenIssuesSummary(statusMap) : ""}
+            {hydrated ? getOpenIssuesSummary(statusMap, answers) : ""}
           </p>
           <p className="mt-3 text-xs italic text-ink-muted">
             Dokumen ini bersifat pelengkap ringkas dan tidak menggantikan protokol penelitian
@@ -98,13 +104,20 @@ function ChecklistCetakContent() {
 
       <div className="mt-6 space-y-8">
         {categories.map((category) => {
-          const itemsInCategory = checklistItems.filter(
+          const itemsInCategory = visibleItems.filter(
             (item) => item.categoryId === category.id
           );
+          if (itemsInCategory.length === 0) return null;
+          const quote = categoryQuotes[category.id];
           return (
             <section key={category.id}>
               <h2 className="font-display text-lg font-semibold text-ink">{category.name}</h2>
               <p className="mt-1 text-sm text-ink-muted">{category.description}</p>
+              {quote ? (
+                <p className="mt-2 text-xs italic leading-[20px] text-ink-muted">
+                  &ldquo;{quote.quote}&rdquo; — Sumber: {quote.sourceLabel}
+                </p>
+              ) : null}
               <ul className="mt-3 space-y-3">
                 {itemsInCategory.map((item) => (
                   <li key={item.id} className="border-t border-border-subtle pt-3">

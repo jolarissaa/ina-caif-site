@@ -16,6 +16,18 @@ export type CitationType = "free" | "paywalled";
 
 export type ChecklistStatus = "selesai" | "berjalan" | "belum";
 
+// Qualifying conditions, answered once on a short questionnaire before the
+// checklist is shown. An item that names one only applies when that
+// condition is true for the product being assessed — e.g. items tagged
+// "ai" stay hidden until the person confirms their product uses AI/ML, so
+// the checklist narrows to what actually applies instead of showing all 33
+// items to everyone regardless of product profile.
+export type QualifyingCondition =
+  | "ai"
+  | "continuousLearning"
+  | "generative"
+  | "importLocalValidation";
+
 export type ChecklistItem = {
   id: string;
   categoryId: string;
@@ -25,6 +37,7 @@ export type ChecklistItem = {
   citationType: CitationType;
   citationUrl: string;
   defaultStatus: ChecklistStatus;
+  condition?: QualifyingCondition;
 };
 
 export type Category = {
@@ -33,9 +46,21 @@ export type Category = {
   description: string;
 };
 
+// A short, verbatim excerpt from the regulation itself, shown directly
+// above a category's items on the Compliance Checker (mirroring the EU AI
+// Act's highlighted "Source: Article X" quote boxes) so each section of
+// questions is visibly grounded in the actual clause it comes from before
+// expanding into the items derived from it.
+export type CategoryQuote = {
+  quote: string;
+  sourceLabel: string;
+  sourceUrl: string;
+};
+
 const KMK_BAB2 = "/regulasi/kmk-951-2026#bab-2";
 const KMK_BAB3 = "/regulasi/kmk-951-2026#bab-3";
 const KMK_BAB4 = "/regulasi/kmk-951-2026#bab-4";
+const KMK_BAB5 = "/regulasi/kmk-951-2026#bab-5";
 const UU_PDP_URL = "https://jdih.kemkes.go.id/search?q=UU%2027%20Tahun%202022";
 const PERMENKES_REKAM_MEDIS_URL =
   "https://jdih.kemkes.go.id/search?q=Permenkes%2024%20Tahun%202022";
@@ -97,6 +122,67 @@ export const categories: Category[] = [
   },
 ];
 
+// Verbatim excerpts, one per category, pulled directly from lib/regulationText.ts.
+// Categories not listed here (klasifikasi-administrasi) still open straight
+// into their items — not every section needs an introductory quote, only
+// the ones where a short clause meaningfully frames what follows.
+export const categoryQuotes: Record<string, CategoryQuote> = {
+  "klasifikasi-administrasi": {
+    quote:
+      "Dalam menentukan kesesuaian klasifikasi perangkat lunak sebagai SaMD atau SiMD, penentuan dilakukan dengan menggunakan diagram alir sebagaimana tercantum dalam Gambar 2.1.",
+    sourceLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab II.C",
+    sourceUrl: KMK_BAB2,
+  },
+  "dasar-perangkat-lunak": {
+    quote:
+      "Manajemen puncak harus memastikan bahwa setiap personel yang terlibat dalam pengembangan dan pengelolaan perangkat lunak alat kesehatan memiliki kompetensi yang sesuai, serta didukung oleh keterampilan, pengalaman, dan pelatihan yang memadai.",
+    sourceLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab II.E",
+    sourceUrl: KMK_BAB2,
+  },
+  "kecerdasan-buatan": {
+    quote:
+      "Dokumen yang disampaikan dalam proses pendaftaran Alat Kesehatan dengan aplikasi Kecerdasan Buatan harus memuat informasi terkait desain, pengembangan, validasi, dan pengendalian sistem kecerdasan buatan sebagaimana dirangkum dalam Tabel 3.1.",
+    sourceLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.C.7",
+    sourceUrl: KMK_BAB3,
+  },
+  "pembelajaran-berkelanjutan-generatif": {
+    quote:
+      "Alat Kesehatan Berbasis Perangkat Lunak yang menerapkan continuous machine learning dapat mengalami perubahan perilaku setelah digunakan dalam pelayanan klinis. Dalam proses registrasi izin edar, pelaku usaha wajib menyampaikan dokumen yang menunjukkan mekanisme pengendalian continuous machine learning untuk menjamin bahwa perubahan model tidak memengaruhi keamanan, kinerja, dan tujuan penggunaan perangkat.",
+    sourceLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.C.8",
+    sourceUrl: KMK_BAB3,
+  },
+  "bukti-validasi-klinis": {
+    quote:
+      "Jenis bukti klinis yang digunakan dalam proses evaluasi permohonan izin edar alat kesehatan berbasis perangkat lunak dirangkum dalam tabel yang memuat rekomendasi bukti klinis sesuai dengan karakteristik perangkat lunak sebagaimana tercantum dalam Tabel 3.2.",
+    sourceLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.E.4",
+    sourceUrl: KMK_BAB3,
+  },
+  penandaan: {
+    quote:
+      "Penandaan pada alat kesehatan berbasis perangkat lunak harus memuat informasi yang memadai untuk mendukung identifikasi, keselamatan, serta penggunaan produk secara tepat.",
+    sourceLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.F",
+    sourceUrl: KMK_BAB3,
+  },
+  "etika-gmlp": {
+    quote:
+      "Dalam pengembangan alat kesehatan berbasis perangkat lunak dengan aplikasi kecerdasan buatan atau mesin pembelajaran (AI-ML MD), prinsip Good Machine Learning Practice (GMLP) wajib dilakukan untuk menjamin keamanan, kinerja klinis, mutu, dan efektivitas sepanjang siklus hidup produk.",
+    sourceLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab IV.A.2",
+    sourceUrl: KMK_BAB4,
+  },
+  "interoperabilitas-data": {
+    quote:
+      "Dalam hal alat kesehatan berbasis perangkat lunak akan diintegrasikan dengan Sistem Informasi Kesehatan Nasional, produk harus memenuhi persyaratan sebagai berikut: dirancang sebagai sistem terbuka; mendukung standar interoperabilitas yang berlaku; dan mampu terintegrasi dengan platform nasional pertukaran data kesehatan.",
+    sourceLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab IV.A.4",
+    sourceUrl: KMK_BAB4,
+  },
+  "pasca-pemasaran": {
+    quote:
+      "Pengawasan terhadap izin edar alat kesehatan berbasis perangkat lunak dilakukan oleh Menteri.",
+    sourceLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab V",
+    sourceUrl: KMK_BAB5,
+  },
+};
+
 export const checklistItems: ChecklistItem[] = [
   // Klasifikasi & Administrasi
   {
@@ -118,7 +204,7 @@ export const checklistItems: ChecklistItem[] = [
       "Produsen memerlukan izin usaha dengan kode KBLI yang relevan serta memenuhi Cara Pembuatan yang Baik (CPB). Distributor memenuhi Cara Distribusi yang Baik (CDB) sebagai gantinya.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.A.1",
     citationType: "free",
-    citationUrl: KMK_BAB2,
+    citationUrl: KMK_BAB3,
     defaultStatus: "belum",
   },
   {
@@ -153,7 +239,7 @@ export const checklistItems: ChecklistItem[] = [
       "Kelima komponen minimum: informasi versi perangkat lunak, ketertelusuran, pengendalian perubahan, interoperabilitas, dan keamanan siber. Disusun berdasarkan siklus hidup perangkat lunak per IEC 62304 atau standar setara.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.C.1–2",
     citationType: "free",
-    citationUrl: KMK_BAB2,
+    citationUrl: KMK_BAB3,
     defaultStatus: "belum",
   },
   {
@@ -164,7 +250,7 @@ export const checklistItems: ChecklistItem[] = [
       "Dokumentasi wajib mencakup kerahasiaan, integritas, dan ketersediaan data; identifikasi kerentanan; analisis risiko; langkah mitigasi; serta bukti verifikasi bahwa kontrol tersebut benar-benar berfungsi.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.C.5",
     citationType: "free",
-    citationUrl: KMK_BAB2,
+    citationUrl: KMK_BAB3,
     defaultStatus: "belum",
   },
   {
@@ -201,6 +287,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    condition: "ai",
   },
   {
     id: "ai-2",
@@ -212,6 +299,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    condition: "ai",
   },
   {
     id: "ai-3",
@@ -223,6 +311,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    condition: "ai",
   },
   {
     id: "ai-4",
@@ -234,6 +323,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    condition: "ai",
   },
   {
     id: "ai-5",
@@ -245,6 +335,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    condition: "ai",
   },
   {
     id: "ai-6",
@@ -256,6 +347,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    condition: "ai",
   },
 
   // Pembelajaran Berkelanjutan & Model Generatif
@@ -267,8 +359,9 @@ export const checklistItems: ChecklistItem[] = [
       "Mencakup alur proses, frekuensi pembaruan, dan parameter yang berubah selama masa penerapan.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.C.9(a)",
     citationType: "free",
-    citationUrl: KMK_BAB2,
+    citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    condition: "continuousLearning",
   },
   {
     id: "lanjutan-2",
@@ -278,8 +371,9 @@ export const checklistItems: ChecklistItem[] = [
       "Rollback ke versi model sebelumnya wajib dijelaskan secara eksplisit sebagai bagian dari mekanisme keamanan ini.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.C.9(b)",
     citationType: "free",
-    citationUrl: KMK_BAB2,
+    citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    condition: "continuousLearning",
   },
   {
     id: "lanjutan-3",
@@ -289,8 +383,9 @@ export const checklistItems: ChecklistItem[] = [
       "Kriteria inklusi/eksklusi data baru harus konsisten dengan dataset pelatihan awal untuk meminimalkan bias.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.C.9(c)",
     citationType: "free",
-    citationUrl: KMK_BAB2,
+    citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    condition: "continuousLearning",
   },
   {
     id: "lanjutan-4",
@@ -300,8 +395,9 @@ export const checklistItems: ChecklistItem[] = [
       "Dua elemen tambahan yang juga wajib: pembatasan ruang lingkup penggunaan yang jelas, dan metode evaluasi konsistensi serta akurasi informasi medis yang dihasilkan secara berkelanjutan, bukan hanya sekali saat pengajuan.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.C.10",
     citationType: "free",
-    citationUrl: KMK_BAB2,
+    citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    condition: "generative",
   },
 
   // Bukti & Validasi Klinis
@@ -324,7 +420,7 @@ export const checklistItems: ChecklistItem[] = [
       "Regulasi tidak mencantumkan jumlah pasien atau formula besar sampel untuk uji klinik — rujuk ke Pedoman Uji Klinik Alat Kesehatan terpisah atau praktik statistik uji klinis standar untuk menentukan besar sampel.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.E",
     citationType: "free",
-    citationUrl: KMK_BAB2,
+    citationUrl: KMK_BAB3,
     defaultStatus: "belum",
   },
   {
@@ -335,8 +431,9 @@ export const checklistItems: ChecklistItem[] = [
       "Dipicu jika produk dikembangkan atau dilatih ulang dengan data representasi populasi Indonesia, dan/atau menggunakan AI berisiko sedang–tinggi untuk diagnosis, skrining, atau keputusan klinis. Dapat dilakukan di rumah sakit, perguruan tinggi, laboratorium terakreditasi, atau unit teknis Kemenkes, dan hasilnya wajib diajukan dalam 1 tahun sejak izin edar terbit.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.D",
     citationType: "free",
-    citationUrl: KMK_BAB2,
+    citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    condition: "importLocalValidation",
   },
 
   // Penandaan
@@ -347,7 +444,7 @@ export const checklistItems: ChecklistItem[] = [
     explanation: "Informasi identitas ini wajib tampil pada label maupun antarmuka perangkat lunak itu sendiri.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.F.1 (Tabel 3.3)",
     citationType: "free",
-    citationUrl: KMK_BAB2,
+    citationUrl: KMK_BAB3,
     defaultStatus: "belum",
   },
   {
@@ -358,7 +455,7 @@ export const checklistItems: ChecklistItem[] = [
       "Mencakup tujuan penggunaan, petunjuk penggunaan, informasi kinerja, dan peringatan keselamatan.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab III.F.2",
     citationType: "free",
-    citationUrl: KMK_BAB2,
+    citationUrl: KMK_BAB3,
     defaultStatus: "belum",
   },
   {
@@ -384,6 +481,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB4,
     defaultStatus: "belum",
+    condition: "ai",
   },
   {
     id: "etika-2",
@@ -395,6 +493,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB4,
     defaultStatus: "belum",
+    condition: "ai",
   },
   {
     id: "etika-3",
@@ -406,6 +505,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB4,
     defaultStatus: "belum",
+    condition: "ai",
   },
   {
     id: "etika-4",
@@ -417,6 +517,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB4,
     defaultStatus: "belum",
+    condition: "ai",
   },
 
   // Interoperabilitas & Perlindungan Data
@@ -468,9 +569,9 @@ export const checklistItems: ChecklistItem[] = [
     categoryId: "pasca-pemasaran",
     title: "Siapkan proses penanganan keluhan: pengumpulan, pencatatan, evaluasi, dan tindak lanjut.",
     explanation: "Termasuk pelacakan kejadian tidak diinginkan (KTD) dan Field Safety Corrective Action (FSCA).",
-    citationLabel: "KMK No. HK.01.07/MENKES/951/2026, kewajiban pasca-pemasaran",
+    citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab V.A.1(a)",
     citationType: "free",
-    citationUrl: KMK_BAB4,
+    citationUrl: KMK_BAB5,
     defaultStatus: "belum",
   },
   {
@@ -478,9 +579,9 @@ export const checklistItems: ChecklistItem[] = [
     categoryId: "pasca-pemasaran",
     title: "Jalankan proses pemantauan teknis berkelanjutan untuk kerentanan keamanan dan isu teknis.",
     explanation: "Mencakup isu yang memengaruhi keselamatan maupun kinerja perangkat setelah berada di pasaran.",
-    citationLabel: "KMK No. HK.01.07/MENKES/951/2026, kewajiban pasca-pemasaran",
+    citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab V.A.1(b)",
     citationType: "free",
-    citationUrl: KMK_BAB4,
+    citationUrl: KMK_BAB5,
     defaultStatus: "belum",
   },
   {
@@ -488,9 +589,9 @@ export const checklistItems: ChecklistItem[] = [
     categoryId: "pasca-pemasaran",
     title: "Lakukan validasi klinis pascapemasaran secara berkelanjutan menggunakan data dunia nyata.",
     explanation: "Bagian dari kewajiban yang terus berlanjut, bukan hanya dipenuhi sekali pada saat pengajuan izin edar.",
-    citationLabel: "KMK No. HK.01.07/MENKES/951/2026, kewajiban pasca-pemasaran",
+    citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab V.A.1(c)",
     citationType: "free",
-    citationUrl: KMK_BAB4,
+    citationUrl: KMK_BAB5,
     defaultStatus: "belum",
   },
   {
@@ -498,25 +599,62 @@ export const checklistItems: ChecklistItem[] = [
     categoryId: "pasca-pemasaran",
     title: "Penuhi kewajiban inspeksi lapangan rutin tahunan sesuai ketentuan Kemenkes.",
     explanation: "Kewajiban administratif tahunan yang berlaku selama produk masih beredar.",
-    citationLabel: "KMK No. HK.01.07/MENKES/951/2026, kewajiban pasca-pemasaran",
+    citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab V.A.2",
     citationType: "free",
-    citationUrl: KMK_BAB4,
+    citationUrl: KMK_BAB5,
     defaultStatus: "belum",
   },
 ];
 
+// Minimal shape needed to decide visibility — matches QualifyingAnswers in
+// lib/useQualifyingAnswers.ts without importing a client-only hook file into
+// this plain data module.
+export type QualifyingAnswersLike = {
+  usesAi: boolean | null;
+  continuousLearning: boolean | null;
+  generative: boolean | null;
+  importLocalValidation: boolean | null;
+};
+
+// Whether an item applies to the product being assessed, given the
+// qualifying-questionnaire answers. An item with no condition always
+// applies (the baseline requirements every product goes through). An
+// item whose condition hasn't been answered yet (null) is shown rather
+// than hidden, so skipping the questionnaire falls back to "show
+// everything" instead of silently hiding sections.
+export function isItemVisible(
+  item: ChecklistItem,
+  answers: QualifyingAnswersLike
+): boolean {
+  if (!item.condition) return true;
+  switch (item.condition) {
+    case "ai":
+      return answers.usesAi !== false;
+    case "continuousLearning":
+      return answers.usesAi !== false && answers.continuousLearning !== false;
+    case "generative":
+      return answers.usesAi !== false && answers.generative !== false;
+    case "importLocalValidation":
+      return answers.importLocalValidation !== false;
+    default:
+      return true;
+  }
+}
+
 // Builds a short, plain-language line listing which categories still have
-// items that are "Sedang Berjalan" or "Belum Dimulai", for the auto-generated
-// ethical-issues line on the printable ethics-context summary. Categories
-// where every item is "Selesai" are left out.
+// visible items that are "Sedang Berjalan" or "Belum Dimulai", for the
+// auto-generated ethical-issues line on the printable ethics-context
+// summary. Categories with no visible items (filtered out by the
+// qualifying answers) or where every visible item is "Selesai" are left out.
 export function getOpenIssuesSummary(
-  statusMap: Record<string, ChecklistStatus>
+  statusMap: Record<string, ChecklistStatus>,
+  answers: QualifyingAnswersLike
 ): string {
   const openCategoryNames: string[] = [];
 
   for (const category of categories) {
     const itemsInCategory = checklistItems.filter(
-      (item) => item.categoryId === category.id
+      (item) => item.categoryId === category.id && isItemVisible(item, answers)
     );
     const hasOpenItem = itemsInCategory.some(
       (item) => statusMap[item.id] !== "selesai"
