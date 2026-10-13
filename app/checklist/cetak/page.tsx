@@ -1,6 +1,8 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   categories,
   checklistItems,
@@ -13,17 +15,31 @@ import StatusPill from "@/components/StatusPill";
 // Printable, single-column view meant to be opened and saved as PDF via the
 // browser's own Print dialog. No navigation chrome; the .no-print class
 // (see app/globals.css) hides controls that only make sense on screen.
+// The "Konteks untuk Tim Etik" section only appears when the visitor chose
+// "Ya" in the export dialog on /checklist (carried here as ?etik=1) and
+// actually filled in at least one field there.
 export default function ChecklistCetakPage() {
+  return (
+    <Suspense fallback={null}>
+      <ChecklistCetakContent />
+    </Suspense>
+  );
+}
+
+function ChecklistCetakContent() {
   const { statusMap, hydrated } = useChecklistState();
   const { context } = useEthicsContext();
+  const searchParams = useSearchParams();
+  const includeEthicsContext = searchParams.get("etik") === "1";
 
   const hasContext =
-    context.judulProyek ||
-    context.institusi ||
-    context.namaPenelitiUtama ||
-    context.lokasi ||
-    context.perkiraanWaktu ||
-    context.ringkasan;
+    includeEthicsContext &&
+    (context.judulProyek ||
+      context.institusi ||
+      context.namaPenelitiUtama ||
+      context.lokasi ||
+      context.perkiraanWaktu ||
+      context.ringkasan);
 
   return (
     <main className="mx-auto max-w-content px-6 py-12">
@@ -41,7 +57,7 @@ export default function ChecklistCetakPage() {
       </div>
 
       <header className="border-b border-border-subtle pb-6">
-        <p className="font-mono text-xs font-semibold uppercase tracking-wide text-brand">
+        <p className="text-xs font-semibold uppercase tracking-wide text-brand">
           INA-CAIF
         </p>
         <h1 className="mt-2 font-display text-2xl font-bold text-ink">
@@ -99,7 +115,7 @@ export default function ChecklistCetakPage() {
                     <p className="mt-1 text-sm leading-[22px] text-ink-muted">
                       {item.explanation}
                     </p>
-                    <p className="mt-1 font-mono text-xs text-ink-muted">
+                    <p className="mt-1 text-xs font-medium text-ink-muted">
                       Rujukan: {item.citationLabel}
                     </p>
                   </li>

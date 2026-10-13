@@ -26,7 +26,7 @@ const mono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "INA-CAIF",
   description:
-    "Checklist kepatuhan yang menerjemahkan regulasi dan standar AI kesehatan di Indonesia menjadi langkah teknis yang jelas untuk dokter dan engineer.",
+    "Checklist kepatuhan yang menerjemahkan regulasi dan standar AI kesehatan di Indonesia menjadi langkah teknis yang jelas untuk dokter, engineer, maupun tenaga lain yang terlibat dalam pengembangan software kesehatan berbasis AI.",
 };
 
 export default function RootLayout({

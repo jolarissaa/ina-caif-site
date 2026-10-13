@@ -3,7 +3,7 @@ import Link from "next/link";
 const NAV_LINKS = [
   { href: "/checklist", label: "Checklist" },
   { href: "/regulasi", label: "Pustaka Regulasi" },
-  { href: "/tentang", label: "Tentang" },
+  { href: "/tentang", label: "Tentang INA-CAIF" },
 ];
 
 export default function Header() {

@@ -11,14 +11,15 @@ export default function TentangPage() {
         <div className="mt-6 max-w-2xl space-y-5 text-[15px] leading-[24px] text-ink-muted">
           <p>
             INA-CAIF (Indonesia Clinical AI Audit &amp; Governance Framework) disusun untuk
-            membantu dokter dan engineer yang membangun software kesehatan berbasis AI memahami
-            persyaratan izin edar, manajemen risiko, validasi klinis, dokumentasi teknis, dan
-            perlindungan data yang berlaku di Indonesia.
+            membantu dokter, engineer, maupun tenaga lain yang terlibat dalam pengembangan
+            software kesehatan berbasis AI memahami persyaratan izin edar, manajemen risiko,
+            validasi klinis, dokumentasi teknis, dan perlindungan data yang berlaku di Indonesia.
           </p>
           <p>
-            Indonesia saat ini mendorong kemajuan teknologi kesehatan, namun masih banyak dokter
-            dan engineer yang belum memahami secara pasti bagaimana prosesnya atau aspek apa saja
-            yang perlu diperhatikan. INA-CAIF berangkat dari hipotesis tersebut dan berfokus pada
+            Indonesia saat ini mendorong kemajuan teknologi kesehatan, namun masih banyak dokter,
+            engineer, maupun tenaga lain yang terlibat di dalamnya yang belum memahami secara
+            pasti bagaimana prosesnya atau aspek apa saja yang perlu diperhatikan. INA-CAIF
+            berangkat dari hipotesis tersebut dan berfokus pada
             pemahaman mengenai kualifikasi izin edar, bukan pada pemahaman teknis AI itu sendiri,
             karena penerjemahan persyaratan normatif menjadi langkah teknis masih menjadi
             pembahasan yang terus berkembang, termasuk di tingkat internasional seperti WHO.

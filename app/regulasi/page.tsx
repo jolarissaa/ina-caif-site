@@ -80,7 +80,7 @@ export default function RegulasiPage() {
               className="flex items-start justify-between gap-4 p-5 hover:bg-surface-alt"
             >
               <div>
-                <p className="font-mono text-sm font-medium text-ink">{source.name}</p>
+                <p className="text-sm font-semibold text-ink">{source.name}</p>
                 <p className="mt-1 text-sm leading-[20px] text-ink-muted">{source.description}</p>
               </div>
               <span className="mt-1 flex-shrink-0 rounded-sm bg-surface-alt px-2 py-0.5 text-[11px] font-semibold text-ink-muted">

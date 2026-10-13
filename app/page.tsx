@@ -18,15 +18,16 @@ export default function HomePage() {
       <Header />
       <main>
         <section className="mx-auto max-w-content px-6 py-20">
-          <p className="font-mono text-xs font-semibold uppercase tracking-wide text-brand">
+          <p className="text-xs font-semibold uppercase tracking-wide text-brand">
             Indonesia Clinical AI Audit &amp; Governance Framework
           </p>
           <h1 className="mt-4 max-w-2xl font-display text-4xl font-bold leading-tight text-ink">
             Menerjemahkan regulasi kesehatan menjadi langkah teknis yang jelas.
           </h1>
           <p className="mt-6 max-w-xl text-[17px] leading-[26px] text-ink-muted">
-            Indonesia saat ini mendorong kemajuan teknologi kesehatan, namun masih banyak dokter
-            dan engineer yang belum memahami secara pasti bagaimana prosesnya atau aspek apa saja
+            Indonesia saat ini mendorong kemajuan teknologi kesehatan, namun masih banyak dokter,
+            engineer, maupun tenaga lain yang terlibat dalam pengembangan software kesehatan
+            berbasis AI yang belum memahami secara pasti bagaimana prosesnya atau aspek apa saja
             yang perlu diperhatikan, terutama dalam memenuhi persyaratan untuk mendapatkan izin
             edar. INA-CAIF menyusun persyaratan tersebut menjadi checklist yang bisa langsung
             digunakan.
@@ -54,7 +55,7 @@ export default function HomePage() {
             </p>
             <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2">
               {STANDARDS.map((name) => (
-                <span key={name} className="font-mono text-sm text-ink-muted">
+                <span key={name} className="text-sm font-medium text-ink-muted">
                   {name}
                 </span>
               ))}
@@ -65,11 +66,11 @@ export default function HomePage() {
         <section className="mx-auto max-w-content px-6 py-16">
           <div className="rounded-lg border border-border-subtle bg-surface-alt p-8">
             <h2 className="font-display text-xl font-semibold text-ink">
-              Bantu kami memetakan kesulitan yang sebenarnya dialami
+              Bantu kami memetakan kesulitan yang dialami
             </h2>
             <p className="mt-3 max-w-xl text-sm leading-[22px] text-ink-muted">
-              Survei singkat untuk dokter dan engineer yang pernah membangun atau terlibat dalam
-              software berbasis AI di bidang kesehatan.
+              Survei singkat untuk dokter, engineer, maupun tenaga lain yang pernah membangun
+              atau terlibat dalam software berbasis AI di bidang kesehatan.
             </p>
             <a
               href="https://its.id/m/INACAIF"
