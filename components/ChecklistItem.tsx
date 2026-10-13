@@ -5,6 +5,7 @@ import { ChecklistItem as ChecklistItemType, ChecklistStatus } from "@/lib/check
 import StatusPill from "./StatusPill";
 import CitationChip from "./CitationChip";
 import SourceBadge from "./SourceBadge";
+import { useBreakdownState } from "@/lib/useBreakdownState";
 
 type Props = {
   item: ChecklistItemType;
@@ -20,17 +21,29 @@ const STATUS_OPTIONS: { value: ChecklistStatus; label: string }[] = [
 
 export default function ChecklistItem({ item, status, onStatusChange }: Props) {
   const [open, setOpen] = useState(false);
+  const { isChecked, toggleStep } = useBreakdownState();
+
+  // A compound item (its real content is the breakdown) doesn't get its own
+  // quick-toggle checkbox — checking off one box for "susun dokumen dengan 5
+  // komponen" doesn't mean anything on its own. The status dropdown stays as
+  // the item's overall tracker either way; the breakdown's own checkboxes
+  // carry the actual checkable work when there is one.
+  const hasActionableBreakdown = Boolean(
+    item.breakdown?.some((step) => step.actionable !== false)
+  );
 
   return (
     <div className="rounded-lg border border-border-subtle bg-surface">
       <div className="flex items-start gap-3 p-4">
-        <input
-          type="checkbox"
-          checked={status === "selesai"}
-          onChange={(e) => onStatusChange(e.target.checked ? "selesai" : "berjalan")}
-          className="mt-1 h-4 w-4 flex-shrink-0 rounded-sm border-border-subtle text-brand focus:ring-brand"
-          aria-label={`Tandai "${item.title}"`}
-        />
+        {!hasActionableBreakdown ? (
+          <input
+            type="checkbox"
+            checked={status === "selesai"}
+            onChange={(e) => onStatusChange(e.target.checked ? "selesai" : "berjalan")}
+            className="mt-1 h-4 w-4 flex-shrink-0 rounded-sm border-border-subtle text-brand focus:ring-brand"
+            aria-label={`Tandai "${item.title}"`}
+          />
+        ) : null}
 
         <div className="min-w-0 flex-1">
           <button
@@ -75,21 +88,53 @@ export default function ChecklistItem({ item, status, onStatusChange }: Props) {
               {item.breakdown && item.breakdown.length > 0 ? (
                 <div className="rounded-md border border-border-subtle bg-surface-alt p-3">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
-                    Rincian teknis
+                    {hasActionableBreakdown ? "Rincian teknis — checklist" : "Rincian teknis"}
                   </p>
-                  <ol className="mt-2 space-y-2.5">
-                    {item.breakdown.map((step, i) => (
-                      <li key={i} className="text-sm leading-[20px] text-ink">
-                        <span className="text-ink-muted">{i + 1}. </span>
-                        {step.text}
-                        {step.source ? (
-                          <div className="mt-1.5">
-                            <SourceBadge {...step.source} />
-                          </div>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ol>
+                  <ul className="mt-2 space-y-2.5">
+                    {item.breakdown.map((step, i) => {
+                      const checked = isChecked(item.id, i);
+                      if (step.actionable === false) {
+                        return (
+                          <li key={i} className="flex gap-2 text-sm leading-[20px] text-ink-muted">
+                            <span aria-hidden className="flex-shrink-0">
+                              –
+                            </span>
+                            <span>
+                              {step.text}
+                              {step.source ? (
+                                <div className="mt-1.5">
+                                  <SourceBadge {...step.source} />
+                                </div>
+                              ) : null}
+                            </span>
+                          </li>
+                        );
+                      }
+                      return (
+                        <li key={i} className="flex gap-2">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleStep(item.id, i)}
+                            className="mt-0.5 h-4 w-4 flex-shrink-0 rounded-sm border-border-subtle text-brand focus:ring-brand"
+                            aria-label={step.text}
+                          />
+                          <span
+                            className={`text-sm leading-[20px] ${
+                              checked ? "text-ink-muted line-through decoration-ink-muted/50" : "text-ink"
+                            }`}
+                          >
+                            {step.text}
+                            {step.source ? (
+                              <div className="mt-1.5">
+                                <SourceBadge {...step.source} />
+                              </div>
+                            ) : null}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
                 </div>
               ) : null}
 

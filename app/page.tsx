@@ -17,20 +17,15 @@ export default function HomePage() {
     <>
       <Header />
       <main>
-        <section className="mx-auto max-w-content px-6 py-20">
-          <p className="text-xs font-semibold uppercase tracking-wide text-brand">
+        <section className="mx-auto max-w-content px-6 pt-12 pb-8">
+          <h1 className="font-display text-4xl font-bold leading-tight text-ink sm:text-5xl">
+            INA-CAIF
+          </h1>
+          <p className="mt-2 text-base font-medium text-ink-muted sm:text-lg">
             Indonesia Clinical AI Audit &amp; Governance Framework
           </p>
-          <h1 className="mt-4 max-w-2xl font-display text-4xl font-bold leading-tight text-ink">
+          <p className="mt-3 max-w-xl text-sm leading-[22px] text-ink-muted">
             Menerjemahkan regulasi kesehatan menjadi langkah teknis yang jelas.
-          </h1>
-          <p className="mt-6 max-w-xl text-[17px] leading-[26px] text-ink-muted">
-            Indonesia saat ini mendorong kemajuan teknologi kesehatan, namun masih banyak dokter,
-            engineer, maupun tenaga lain yang terlibat dalam pengembangan software kesehatan
-            berbasis AI yang belum memahami secara pasti bagaimana prosesnya atau aspek apa saja
-            yang perlu diperhatikan, terutama dalam memenuhi persyaratan untuk mendapatkan izin
-            edar. INA-CAIF menyusun persyaratan tersebut menjadi checklist yang bisa langsung
-            digunakan.
           </p>
         </section>
 
@@ -55,36 +50,6 @@ export default function HomePage() {
               accent="accent"
             />
           </div>
-
-          <details className="group mt-4 rounded-md border border-border-subtle bg-surface-alt px-4 py-3">
-            <summary className="cursor-pointer text-xs font-medium text-ink-muted hover:text-brand">
-              Ingin mengganti gambar di atas dengan milik Anda sendiri?
-            </summary>
-            <div className="mt-2 space-y-1 text-xs leading-[18px] text-ink-muted">
-              <p>
-                Taruh file gambar dengan nama persis berikut di folder{" "}
-                <code className="rounded-sm bg-surface px-1 py-0.5">public/images/</code> pada
-                proyek — gambar akan otomatis menggantikan placeholder di atas, tanpa perlu ubah
-                kode apa pun:
-              </p>
-              <ul className="ml-4 list-disc space-y-0.5">
-                <li>
-                  <code className="rounded-sm bg-surface px-1 py-0.5">checklist-preview.png</code>{" "}
-                  (atau <code className="rounded-sm bg-surface px-1 py-0.5">.jpg</code>) — untuk
-                  kartu Compliance Checker
-                </li>
-                <li>
-                  <code className="rounded-sm bg-surface px-1 py-0.5">pustaka-preview.png</code>{" "}
-                  (atau <code className="rounded-sm bg-surface px-1 py-0.5">.jpg</code>) — untuk
-                  kartu Pustaka Regulasi
-                </li>
-              </ul>
-              <p>
-                Rasio yang disarankan: 16:10. Setelah file ditambahkan, commit dan push seperti
-                biasa — gambarnya langsung muncul.
-              </p>
-            </div>
-          </details>
         </section>
 
         <section className="border-y border-border-subtle bg-surface-alt">

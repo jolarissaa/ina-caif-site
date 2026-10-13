@@ -14,6 +14,17 @@
   }
 }
 
+/* Used by CategoryProgressBar: the segment row scrolls via its own arrow
+   buttons, so the native scrollbar track (which read as a second, clunky
+   drag-to-scroll control) is hidden rather than shown underneath it. */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Print styles used by /checklist/cetak, the PDF export view.
    Visiting that page and using the browser's Print (Save as PDF) gives a
    clean, single-column document with no navigation or interactive chrome. */

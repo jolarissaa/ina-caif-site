@@ -51,6 +51,13 @@ export type SourceRef = {
 export type BreakdownStep = {
   text: string;
   source?: SourceRef;
+  // Whether this step is itself a concrete, checkable task (default when
+  // omitted: true). A few steps are supplementary context instead — a
+  // cross-reference to another item, a classification definition you pick
+  // one of rather than "complete", a caveat about what the regulation
+  // doesn't specify — and those are marked false so they render as a plain
+  // note rather than a checkbox that can never meaningfully be "done".
+  actionable?: boolean;
 };
 
 export type ChecklistItem = {
@@ -340,6 +347,7 @@ export const checklistItems: ChecklistItem[] = [
         text:
           "Benchmark internasional untuk SMM software alat kesehatan secara keseluruhan: ISO 13485:2016. KMK juga merujuk ISO 60601-1/61010-1 (keselamatan listrik/umum), IEC 62366-1 (usability), dan ISO 27001 (keamanan informasi) sebagai standar pendukung lain yang relevan tergantung jenis produk.",
         source: SOURCES.isoManagement,
+        actionable: false,
       },
     ],
   },
@@ -379,6 +387,7 @@ export const checklistItems: ChecklistItem[] = [
         text:
           "Struktur dokumen ini mengikuti siklus hidup software per IEC 62304: rencana pengembangan → analisis kebutuhan → desain arsitektur → desain rinci → implementasi & verifikasi unit → integrasi & pengujian integrasi → pengujian sistem → rilis. Lihat butir \"Pastikan siklus hidup pengembangan mengacu pada IEC 62304\" di bawah untuk rincian setiap tahap.",
         source: SOURCES.iecSoftware,
+        actionable: false,
       },
     ],
   },
@@ -451,16 +460,19 @@ export const checklistItems: ChecklistItem[] = [
         text:
           "Kelas A — software tidak dapat menyebabkan atau berkontribusi pada hazardous situation apa pun; atau jika bisa, dampaknya tidak menimbulkan cedera atau kerusakan kesehatan.",
         source: SOURCES.iecSoftware,
+        actionable: false,
       },
       {
         text:
           "Kelas B — software dapat berkontribusi pada hazardous situation yang berakibat cedera non-serius (non-serious injury).",
         source: SOURCES.iecSoftware,
+        actionable: false,
       },
       {
         text:
           "Kelas C — software dapat berkontribusi pada hazardous situation yang berakibat kematian atau cedera serius (serious injury). Kelas ini menuntut kelengkapan proses paling tinggi dari standar; kelas bisa diturunkan dari C ke B, atau B ke A, hanya jika ada kontrol risiko di luar software (misalnya kontrol perangkat keras) yang terbukti menurunkan risiko tersebut ke tingkat yang dapat diterima.",
         source: SOURCES.iecSoftware,
+        actionable: false,
       },
       {
         text:
@@ -570,6 +582,7 @@ export const checklistItems: ChecklistItem[] = [
         text:
           "Sebagai referensi struktur yang lebih matang: PCCP FDA memecah dokumentasi perubahan AI menjadi tiga bagian — \"Description of Modifications\" (spesifikasi perubahan yang direncanakan), \"Modification Protocol\" (metode validasi perubahan tersebut, termasuk praktik manajemen data dan praktik pelatihan ulang), dan \"Impact Assessment\" (penilaian manfaat vs risiko dari perubahan). Memetakan dokumentasi CML Anda ke tiga bagian ini membuatnya lebih mudah diaudit.",
         source: SOURCES.fdaPccp,
+        actionable: false,
       },
     ],
   },
@@ -601,6 +614,7 @@ export const checklistItems: ChecklistItem[] = [
         text:
           "FDA mensyaratkan \"re-training practices\" dan prosedur pembaruan (update procedures) didokumentasikan sebagai bagian dari Modification Protocol — termasuk kriteria penerimaan sebelum versi baru menggantikan versi lama di lingkungan produksi.",
         source: SOURCES.fdaPccp,
+        actionable: false,
       },
     ],
   },
@@ -663,15 +677,18 @@ export const checklistItems: ChecklistItem[] = [
       {
         text:
           "Sumbu pertama — tingkat keparahan kondisi klinis yang menjadi sasaran software: Kritis, Serius, atau Tidak Serius.",
+        actionable: false,
       },
       {
         text:
           "Sumbu kedua — signifikansi keluaran software terhadap keputusan klinis: \"menangani dan mendiagnosis\" (paling tinggi, langsung mendiagnosis/mengobati), \"mendorong manajemen klinis\", atau \"memberikan informasi manajemen klinis\" (paling rendah, sekadar menginformasikan).",
+        actionable: false,
       },
       {
         text:
           "KMK tidak memberi contoh cara memutuskan baris/kolom mana yang berlaku untuk produk Anda. IMDRF N12 menyediakan kerangka kategorisasi risiko SaMD dengan contoh terpandu yang bisa dipakai sebagai referensi tambahan untuk mengisi kekosongan ini — bukan pengganti Tabel 3.2 Kemenkes, melainkan bantuan untuk menafsirkannya.",
           source: SOURCES.imdrfN12,
+          actionable: false,
       },
     ],
   },
@@ -704,6 +721,7 @@ export const checklistItems: ChecklistItem[] = [
       {
         text:
           "Besar sampel/jumlah pasien untuk uji klinik secara spesifik tidak diatur di KMK ini maupun di kerangka WHO di atas — tentukan lewat Pedoman Uji Klinik Alat Kesehatan Kemenkes (dokumen terpisah) atau kalkulasi power statistik standar berdasarkan outcome utama penelitian Anda.",
+        actionable: false,
       },
     ],
   },
@@ -779,6 +797,7 @@ export const checklistItems: ChecklistItem[] = [
         text:
           "WHO menekankan bahwa representativitas data pelatihan terhadap populasi sasaran, dan transparansi tentang populasi mana yang TIDAK terwakili dalam data, adalah langkah dasar sebelum klaim \"non-diskriminatif\" bisa dibuktikan.",
         source: SOURCES.whoEthicsLmm,
+        actionable: false,
       },
     ],
   },
@@ -868,6 +887,7 @@ export const checklistItems: ChecklistItem[] = [
         text:
           "Data kesehatan termasuk \"data pribadi yang bersifat spesifik\" (Pasal 4 ayat 2), bersama data biometrik dan data genetika — kategori ini wajib mendapat perlindungan lebih tinggi dibanding data pribadi umum (nama, jenis kelamin, dll).",
         source: SOURCES.uuPdp,
+        actionable: false,
       },
       {
         text:
