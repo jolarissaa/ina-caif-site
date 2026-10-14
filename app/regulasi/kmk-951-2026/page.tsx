@@ -1,6 +1,21 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { kmk9512026, KMK_951_2026_SOURCE_URL, RegulationPart } from "@/lib/regulationText";
+import { formatRegulationParagraphs } from "@/lib/formatRegulationText";
+import ClassificationFlowchart from "@/components/ClassificationFlowchart";
+import EvidenceTierTable from "@/components/EvidenceTierTable";
+
+// Parts whose run-on text includes a reference to a diagram/table the
+// original PDF renders as an image — Gambar 2.1 (p.9) and Tabel 3.2
+// (p.23-24) — get the real, readable version injected right after their
+// text instead of leaving the reader to picture a diagram from a sentence
+// naming it.
+const DIAGRAM_AFTER_PART: Record<string, React.ReactNode> = {
+  "bab-2-3": <ClassificationFlowchart />,
+};
+const TABLE_AFTER_PART: Record<string, React.ReactNode> = {
+  "bab-3-9": <EvidenceTierTable />,
+};
 
 const BAB_LABEL: Record<string, string> = {
   "bab-1": "Bab I",
@@ -100,9 +115,20 @@ export default function Kmk9512026ExplorerPage() {
 }
 
 function PartBlock({ part, babLabel }: { part: RegulationPart; babLabel?: string }) {
+  const paragraphs = formatRegulationParagraphs(part.text);
   return (
     <div id={part.id} className="scroll-mt-8">
-      <p className="text-sm leading-[24px] text-ink">{part.text}</p>
+      <div className="space-y-3">
+        {paragraphs.map((paragraph, i) => (
+          <p key={i} className="text-sm leading-[24px] text-ink">
+            {paragraph}
+          </p>
+        ))}
+      </div>
+      {DIAGRAM_AFTER_PART[part.id] ? (
+        <div className="mt-4">{DIAGRAM_AFTER_PART[part.id]}</div>
+      ) : null}
+      {TABLE_AFTER_PART[part.id] ? <div className="mt-4">{TABLE_AFTER_PART[part.id]}</div> : null}
       {babLabel ? (
         <p className="mt-2 text-xs text-ink-muted">
           Sumber: {babLabel}

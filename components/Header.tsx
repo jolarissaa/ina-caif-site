@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const NAV_LINKS = [
-  { href: "/checklist", label: "Compliance Checker" },
+  { href: "/produk", label: "Produk Saya" },
   { href: "/regulasi", label: "Pustaka Regulasi" },
   { href: "/tentang", label: "Tentang INA-CAIF" },
 ];

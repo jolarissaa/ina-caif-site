@@ -14,6 +14,7 @@ import { useChecklistState } from "@/lib/useChecklistState";
 import { useEthicsContext } from "@/lib/useEthicsContext";
 import { useQualifyingAnswers } from "@/lib/useQualifyingAnswers";
 import { useBreakdownState } from "@/lib/useBreakdownState";
+import { useProducts } from "@/lib/useProducts";
 import StatusPill from "@/components/StatusPill";
 import {
   CLASSIFICATION_LABEL,
@@ -39,10 +40,16 @@ export default function ChecklistCetakPage() {
 }
 
 function ChecklistCetakContent() {
-  const { statusMap, hydrated } = useChecklistState();
-  const { context } = useEthicsContext();
-  const { answers } = useQualifyingAnswers();
-  const { isChecked } = useBreakdownState();
+  // Exports whichever product is currently active (set on /produk, same
+  // value /checklist was just showing) rather than always exporting
+  // "default" — so printing from product B's checklist never shows
+  // product A's progress.
+  const { products, activeProductId } = useProducts();
+  const activeProduct = products.find((p) => p.id === activeProductId);
+  const { statusMap, hydrated } = useChecklistState(activeProductId);
+  const { context } = useEthicsContext(activeProductId);
+  const { answers } = useQualifyingAnswers(activeProductId);
+  const { isChecked } = useBreakdownState(activeProductId);
   const searchParams = useSearchParams();
   const includeEthicsContext = searchParams.get("etik") === "1";
 
@@ -82,6 +89,7 @@ function ChecklistCetakContent() {
         </p>
         <h1 className="mt-2 font-display text-2xl font-bold text-ink">
           Ringkasan Compliance Checker
+          {activeProduct ? <span className="text-ink-muted"> — {activeProduct.name}</span> : null}
         </h1>
         <p className="mt-1 text-sm text-ink-muted">
           Dicetak pada {new Date().toLocaleDateString("id-ID", { dateStyle: "long" })}

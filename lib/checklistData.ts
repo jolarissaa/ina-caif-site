@@ -849,6 +849,30 @@ export const checklistItems: ChecklistItem[] = [
     defaultStatus: "belum",
     condition: "ai",
   },
+  {
+    id: "etika-5",
+    categoryId: "etika-gmlp",
+    title: "Jamin akses yang setara bagi pengguna terhadap teknologi yang dikembangkan.",
+    explanation:
+      "Setiap pengguna punya hak yang sama untuk mengakses teknologi demi kepentingannya, dengan tetap menjaga prinsip etika, keselamatan, keamanan, dan kinerja alat kesehatan. KMK menyebut prinsip ini apa adanya tanpa metode operasional untuk membuktikan pemenuhannya — murni prinsip dari Kemenkes sendiri, belum ada panduan teknis lebih lanjut untuk ditambahkan di sini.",
+    citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab IV.A.1 (prinsip Aksesibilitas)",
+    citationType: "free",
+    citationUrl: KMK_BAB4,
+    defaultStatus: "belum",
+    condition: "ai",
+  },
+  {
+    id: "etika-6",
+    categoryId: "etika-gmlp",
+    title: "Tunduk pada ketentuan Hak Kekayaan Intelektual (HKI) yang berlaku dalam penyelenggaraan produk.",
+    explanation:
+      "Penyelenggaraan alat kesehatan berbasis perangkat lunak tunduk pada prinsip pelindungan HKI sesuai ketentuan peraturan perundang-undangan. Sama seperti aksesibilitas, KMK menyebutkan ini sebagai prinsip tanpa detail operasional — murni permintaan Kemenkes sendiri, belum ada panduan teknis tambahan yang bisa dirujuk di sini.",
+    citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab IV.A.1 (prinsip Pelindungan Kekayaan Intelektual)",
+    citationType: "free",
+    citationUrl: KMK_BAB4,
+    defaultStatus: "belum",
+    condition: "ai",
+  },
 
   // Interoperabilitas & Perlindungan Data
   {

@@ -55,7 +55,10 @@ export default function ClassificationSummary({
 
       <p className="mt-3 text-xs text-ink-muted">
         Berdasarkan{" "}
-        <Link href="/regulasi/kmk-951-2026#bab-2" className="font-medium text-brand hover:underline">
+        <Link
+          href="/regulasi/kmk-951-2026#bab-2-3"
+          className="font-medium text-brand hover:underline"
+        >
           Gambar 2.1
         </Link>
         {classification === "SaMD" ? (
@@ -63,7 +66,7 @@ export default function ClassificationSummary({
             {" "}
             dan{" "}
             <Link
-              href="/regulasi/kmk-951-2026#bab-3"
+              href="/regulasi/kmk-951-2026#bab-3-9"
               className="font-medium text-brand hover:underline"
             >
               Tabel 3.2

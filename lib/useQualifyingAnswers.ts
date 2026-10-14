@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { InformationRole, SeverityLevel } from "@/lib/classification";
+import { productScopedKey } from "@/lib/productStorage";
 
 // Answers to the short qualifying questionnaire shown before the
 // Compliance Checker. These decide which checklist categories/items are
@@ -13,7 +14,8 @@ import { InformationRole, SeverityLevel } from "@/lib/classification";
 // derivation logic. `completed` tracks whether the person has been
 // through the questionnaire at least once (including an explicit
 // "lewati, tampilkan semua" skip), so returning visitors aren't asked
-// again every visit.
+// again every visit. Scoped per product (see useProducts.ts), so each AI
+// product being tracked gets its own classification.
 
 export type QualifyingAnswers = {
   // Gambar 2.1 classification gates, asked in sequence — each is only
@@ -53,31 +55,41 @@ const DEFAULT_ANSWERS: QualifyingAnswers = {
   completed: false,
 };
 
-export function useQualifyingAnswers() {
+export function useQualifyingAnswers(productId: string = "default") {
   const [answers, setAnswers] = useState<QualifyingAnswers>(DEFAULT_ANSWERS);
   const [hydrated, setHydrated] = useState(false);
 
+  // Re-reads from storage whenever the active product changes, not just on
+  // first mount, so switching products on /produk swaps to that product's
+  // own questionnaire answers instead of keeping the previous one's.
   useEffect(() => {
+    setHydrated(false);
     try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
+      const raw = window.localStorage.getItem(productScopedKey(STORAGE_KEY, productId));
       if (raw) {
-        setAnswers((current) => ({ ...current, ...JSON.parse(raw) }));
+        setAnswers({ ...DEFAULT_ANSWERS, ...JSON.parse(raw) });
+      } else {
+        setAnswers(DEFAULT_ANSWERS);
       }
     } catch {
       // Ignore malformed or inaccessible storage; defaults are used instead.
+      setAnswers(DEFAULT_ANSWERS);
     } finally {
       setHydrated(true);
     }
-  }, []);
+  }, [productId]);
 
-  const persist = useCallback((next: QualifyingAnswers) => {
-    setAnswers(next);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      // If storage is unavailable, state still updates for this session.
-    }
-  }, []);
+  const persist = useCallback(
+    (next: QualifyingAnswers) => {
+      setAnswers(next);
+      try {
+        window.localStorage.setItem(productScopedKey(STORAGE_KEY, productId), JSON.stringify(next));
+      } catch {
+        // If storage is unavailable, state still updates for this session.
+      }
+    },
+    [productId]
+  );
 
   const setAnswer = useCallback(
     <K extends keyof Omit<QualifyingAnswers, "completed">>(
@@ -87,14 +99,14 @@ export function useQualifyingAnswers() {
       setAnswers((current) => {
         const next = { ...current, [field]: value };
         try {
-          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+          window.localStorage.setItem(productScopedKey(STORAGE_KEY, productId), JSON.stringify(next));
         } catch {
           // If storage is unavailable, state still updates for this session.
         }
         return next;
       });
     },
-    []
+    [productId]
   );
 
   // Persists the whole questionnaire's worth of answers plus
@@ -109,27 +121,27 @@ export function useQualifyingAnswers() {
       setAnswers((current) => {
         const next = { ...current, ...values, completed: true };
         try {
-          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+          window.localStorage.setItem(productScopedKey(STORAGE_KEY, productId), JSON.stringify(next));
         } catch {
           // If storage is unavailable, state still updates for this session.
         }
         return next;
       });
     },
-    []
+    [productId]
   );
 
   const markCompleted = useCallback(() => {
     setAnswers((current) => {
       const next = { ...current, completed: true };
       try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        window.localStorage.setItem(productScopedKey(STORAGE_KEY, productId), JSON.stringify(next));
       } catch {
         // If storage is unavailable, state still updates for this session.
       }
       return next;
     });
-  }, []);
+  }, [productId]);
 
   // Reopens the questionnaire without discarding previous answers, so
   // "Ubah Jawaban Profil" on /checklist pre-fills what was already chosen.
@@ -137,13 +149,13 @@ export function useQualifyingAnswers() {
     setAnswers((current) => {
       const next = { ...current, completed: false };
       try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        window.localStorage.setItem(productScopedKey(STORAGE_KEY, productId), JSON.stringify(next));
       } catch {
         // If storage is unavailable, state still updates for this session.
       }
       return next;
     });
-  }, []);
+  }, [productId]);
 
   const resetAll = useCallback(() => {
     persist(DEFAULT_ANSWERS);

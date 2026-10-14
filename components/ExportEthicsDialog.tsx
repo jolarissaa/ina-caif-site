@@ -7,15 +7,19 @@ import { RINGKASAN_MAX_LENGTH, useEthicsContext } from "@/lib/useEthicsContext";
 type Props = {
   open: boolean;
   onClose: () => void;
+  productId?: string;
 };
 
-// Shown when the visitor clicks "Ekspor PDF" on /checklist. First asks
-// whether the export is headed to an ethics committee; only if so does it
-// collect the short "Konteks untuk Tim Etik" fields, then forwards to the
-// printable view with ?etik=1 so that page knows to include that section.
-export default function ExportEthicsDialog({ open, onClose }: Props) {
+// Shown when the visitor clicks "Siapkan Ringkasan untuk Komite Etik" on
+// /checklist. First asks whether the export is headed to an ethics
+// committee; only if so does it collect the short "Konteks untuk Tim Etik"
+// fields, then forwards to the printable view with ?etik=1 so that page
+// knows to include that section. productId scopes the context fields to
+// whichever product is active, so exporting product A never pulls in
+// product B's title/institution/etc.
+export default function ExportEthicsDialog({ open, onClose, productId = "default" }: Props) {
   const router = useRouter();
-  const { context, updateField } = useEthicsContext();
+  const { context, updateField } = useEthicsContext(productId);
   const [step, setStep] = useState<"tanya" | "formulir">("tanya");
 
   if (!open) return null;
@@ -38,11 +42,11 @@ export default function ExportEthicsDialog({ open, onClose }: Props) {
         {step === "tanya" ? (
           <>
             <h2 className="font-display text-lg font-semibold text-ink">
-              Apakah dokumen ini akan dikirim ke tim etik?
+              Apakah ringkasan ini akan dikirim ke komite etik (KEPKN)?
             </h2>
             <p className="mt-2 text-sm leading-[22px] text-ink-muted">
-              Jika ya, Anda bisa melengkapi beberapa informasi singkat terlebih dahulu agar tim
-              etik memiliki konteks sebelum membaca checklist.
+              Jika ya, Anda bisa melengkapi beberapa informasi singkat terlebih dahulu agar
+              komite etik memiliki konteks sebelum membaca checklist ini.
             </p>
             <div className="mt-6 flex flex-wrap justify-end gap-3">
               <button
@@ -50,7 +54,7 @@ export default function ExportEthicsDialog({ open, onClose }: Props) {
                 onClick={handleTidak}
                 className="rounded-md border border-border-subtle px-4 py-2 text-sm font-medium text-ink-muted hover:border-brand hover:text-brand"
               >
-                Tidak, langsung ekspor
+                Tidak, lanjutkan saja
               </button>
               <button
                 type="button"

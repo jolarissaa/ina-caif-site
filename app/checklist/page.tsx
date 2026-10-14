@@ -9,9 +9,11 @@ import QualifyingQuestionnaire from "@/components/QualifyingQuestionnaire";
 import RegulationQuote from "@/components/RegulationQuote";
 import CategoryProgressBar from "@/components/CategoryProgressBar";
 import ClassificationSummary from "@/components/ClassificationSummary";
+import Link from "next/link";
 import { categories, checklistItems, categoryQuotes, isItemVisible } from "@/lib/checklistData";
 import { useChecklistState } from "@/lib/useChecklistState";
 import { useQualifyingAnswers } from "@/lib/useQualifyingAnswers";
+import { useProducts } from "@/lib/useProducts";
 import {
   CLASSIFICATION_LABEL,
   CLASSIFICATION_RESULT_TEXT,
@@ -23,14 +25,19 @@ import {
 
 export default function ChecklistPage() {
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
-  const { statusMap, setStatus, resetAll, hydrated } = useChecklistState();
+  // Which product this checklist belongs to — set on /produk, persisted in
+  // localStorage, and read here so switching products there actually swaps
+  // the checklist, questionnaire, and export context shown below.
+  const { products, activeProductId, hydrated: productsHydrated } = useProducts();
+  const activeProduct = products.find((p) => p.id === activeProductId);
+  const { statusMap, setStatus, resetAll, hydrated } = useChecklistState(activeProductId);
   const {
     answers,
     submit,
     markCompleted,
     reopen,
     hydrated: qualifyingHydrated,
-  } = useQualifyingAnswers();
+  } = useQualifyingAnswers(activeProductId);
 
   // Computed once per render from the questionnaire's answers — see
   // lib/classification.ts. null while the classification gates haven't
@@ -152,7 +159,18 @@ export default function ChecklistPage() {
       <main className="mx-auto max-w-content px-6 py-12">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="font-display text-2xl font-bold text-ink">Compliance Checker</h1>
+            <Link
+              href="/produk"
+              className="no-print text-xs font-medium text-ink-muted hover:text-brand"
+            >
+              ← Produk Saya
+            </Link>
+            <h1 className="mt-1 font-display text-2xl font-bold text-ink">
+              Compliance Checker
+              {productsHydrated && activeProduct ? (
+                <span className="ml-2 text-ink-muted">— {activeProduct.name}</span>
+              ) : null}
+            </h1>
             <p className="mt-2 max-w-xl text-sm leading-[22px] text-ink-muted">
               Tandai setiap butir sesuai kondisi sistem Anda saat ini. Buka setiap butir untuk
               membaca penjelasan dan sumber rujukannya.
@@ -170,13 +188,6 @@ export default function ChecklistPage() {
                   className="rounded-md border border-border-subtle px-3 py-1.5 text-xs font-medium text-ink-muted hover:border-brand hover:text-brand"
                 >
                   Atur Ulang
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setExportDialogOpen(true)}
-                  className="rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-on-brand hover:bg-brand-dark"
-                >
-                  Ekspor PDF
                 </button>
               </div>
             </div>
@@ -243,11 +254,50 @@ export default function ChecklistPage() {
                 );
               })}
             </div>
+
+            <div className="no-print mt-10 rounded-lg border border-border-subtle bg-surface-alt p-6">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                Langkah selanjutnya
+              </p>
+              <h3 className="mt-1 font-display text-base font-semibold text-ink">
+                Checklist ini membantu Anda melacak progres — bukan pengganti penilaian komite
+                etik
+              </h3>
+              <p className="mt-2 max-w-2xl text-sm leading-[22px] text-ink-muted">
+                INA-CAIF membantu memperjelas dokumen dan bukti apa saja yang perlu disiapkan,
+                berdasarkan jawaban kuesioner profil produk Anda. Keputusan akhir tetap ada pada
+                komite etik penelitian kesehatan (KEPKN) dan proses pengajuan izin edar ke
+                Kemenkes. Setelah checklist ini cukup lengkap, gunakan tombol di bawah untuk
+                menyiapkan ringkasan yang bisa dikirim ke komite etik, atau pelajari kembali cara
+                mengajukan izin edar.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => setExportDialogOpen(true)}
+                  className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-dark"
+                >
+                  Siapkan Ringkasan untuk Komite Etik
+                </button>
+                <a
+                  href="https://regalkes.kemkes.go.id"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center rounded-md border border-border-subtle px-4 py-2 text-sm font-semibold text-ink hover:border-brand hover:text-brand"
+                >
+                  Cara Mengajukan Izin Edar
+                </a>
+              </div>
+            </div>
           </>
         )}
       </main>
       <Footer />
-      <ExportEthicsDialog open={exportDialogOpen} onClose={() => setExportDialogOpen(false)} />
+      <ExportEthicsDialog
+        open={exportDialogOpen}
+        onClose={() => setExportDialogOpen(false)}
+        productId={activeProductId}
+      />
     </>
   );
 }

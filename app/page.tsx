@@ -25,17 +25,27 @@ export default function HomePage() {
             Indonesia Clinical AI Audit &amp; Governance Framework
           </p>
           <p className="mt-3 max-w-xl text-sm leading-[22px] text-ink-muted">
-            Menerjemahkan regulasi kesehatan menjadi langkah teknis yang jelas.
+            Menerjemahkan regulasi kesehatan menjadi langkah teknis yang jelas — termasuk
+            kesiapan dokumen sebelum{" "}
+            <a
+              href="https://regalkes.kemkes.go.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-brand hover:underline"
+            >
+              mengajukan izin edar melalui Regalkes Kemenkes
+            </a>
+            .
           </p>
         </section>
 
         <section className="mx-auto max-w-content px-6 pb-16">
           <div className="grid gap-6 sm:grid-cols-2">
             <FeatureCard
-              href="/checklist"
+              href="/produk"
               title="Compliance Checker"
-              description="Susuri persyaratan izin edar, manajemen risiko, hingga etika AI sebagai butir-butir yang bisa ditandai, lengkap dengan sitasi ke regulasi aslinya."
-              linkLabel="Mulai Compliance Checker"
+              description="Susuri persyaratan izin edar, manajemen risiko, hingga etika AI sebagai butir-butir yang bisa ditandai, lengkap dengan sitasi ke regulasi aslinya. Lacak lebih dari satu produk AI sekaligus, masing-masing dengan checklist-nya sendiri."
+              linkLabel="Lihat produk saya"
               imageSrc="/images/checklist-preview.png"
               imageAlt="Pratinjau halaman Compliance Checker INA-CAIF"
               accent="brand"
