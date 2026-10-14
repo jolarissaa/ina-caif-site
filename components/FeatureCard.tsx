@@ -34,7 +34,7 @@ export default function FeatureCard({
   const isbrand = accent === "brand";
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border border-border-subtle bg-surface">
+    <div className="flex h-full flex-col overflow-hidden rounded-lg border border-border-subtle bg-surface">
       <div className="p-6 pb-0 sm:p-8 sm:pb-0">
         <Link
           href={href}
@@ -56,29 +56,37 @@ export default function FeatureCard({
         </Link>
       </div>
 
-      <div className="mt-6 aspect-[16/10] w-full sm:mt-8">
-        {!imageFailed ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={imageSrc}
-            alt={imageAlt}
-            className="h-full w-full object-cover"
-            onError={() => setImageFailed(true)}
-          />
-        ) : (
-          <div
-            className={`flex h-full w-full items-center justify-center border-t border-border-subtle ${
-              isbrand ? "bg-brand/8" : "bg-accent/15"
-            }`}
-          >
-            <div className="flex flex-col items-center gap-2 px-6 text-center">
-              <PlaceholderIcon isbrand={isbrand} />
-              <p className="text-xs text-ink-muted">
-                Letakkan gambar di <code className="text-[11px]">public{imageSrc}</code>
-              </p>
+      {/* mt-auto pushes this flush to the card's bottom edge regardless of
+          how many lines the description above took — the pt-6/pt-8 is a
+          guaranteed minimum gap for when there's no slack to absorb. Without
+          this, two cards whose descriptions differ by a line end up with
+          visibly different image heights (one card's image area taller than
+          the other's), which is what looked "unbalanced" side by side. */}
+      <div className="mt-auto w-full pt-6 sm:pt-8">
+        <div className="aspect-[16/10] w-full">
+          {!imageFailed ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imageSrc}
+              alt={imageAlt}
+              className="h-full w-full object-cover"
+              onError={() => setImageFailed(true)}
+            />
+          ) : (
+            <div
+              className={`flex h-full w-full items-center justify-center border-t border-border-subtle ${
+                isbrand ? "bg-brand/8" : "bg-accent/15"
+              }`}
+            >
+              <div className="flex flex-col items-center gap-2 px-6 text-center">
+                <PlaceholderIcon isbrand={isbrand} />
+                <p className="text-xs text-ink-muted">
+                  Letakkan gambar di <code className="text-[11px]">public{imageSrc}</code>
+                </p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

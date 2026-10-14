@@ -17,6 +17,13 @@ type Props = {
   // app/checklist/page.tsx, which builds this from the questionnaire's
   // answers rather than leaving these items purely self-directed.
   resultBanner?: React.ReactNode;
+  // Which product this item's breakdown checkboxes belong to — without
+  // this, every product would silently share one browser-wide set of
+  // breakdown checkboxes instead of each having its own. Defaults to
+  // "default" so a caller that doesn't pass it (e.g. a future standalone
+  // use of this component) still behaves the way the single-product
+  // version of the site always did.
+  productId?: string;
 };
 
 const STATUS_OPTIONS: { value: ChecklistStatus; label: string }[] = [
@@ -25,9 +32,46 @@ const STATUS_OPTIONS: { value: ChecklistStatus; label: string }[] = [
   { value: "selesai", label: "Selesai" },
 ];
 
-export default function ChecklistItem({ item, status, onStatusChange, resultBanner }: Props) {
+// What each OutputKind looks like: a left-edge accent color on the card
+// plus a small pill naming it, so a reader can tell at a glance — before
+// opening the item — whether it's a caution to keep in mind, a document to
+// draft freeform, or a document with an actual template to go fill in. Per
+// Jo: keep it small and simple (a border + a short label), not a wall of
+// explanation.
+const OUTPUT_KIND_CONFIG: Record<
+  NonNullable<ChecklistItemType["outputKind"]>,
+  { label: string; border: string; pillBg: string; pillText: string }
+> = {
+  peringatan: {
+    label: "Perhatian — bukan dokumen",
+    border: "border-l-amber-400",
+    pillBg: "bg-amber-50",
+    pillText: "text-amber-800",
+  },
+  "dokumen-bebas": {
+    label: "Dokumen bebas — tanpa template resmi",
+    border: "border-l-slate-400",
+    pillBg: "bg-slate-100",
+    pillText: "text-slate-700",
+  },
+  "dokumen-template": {
+    label: "Dokumen — pakai template resmi",
+    border: "border-l-emerald-500",
+    pillBg: "bg-emerald-50",
+    pillText: "text-emerald-800",
+  },
+};
+
+export default function ChecklistItem({
+  item,
+  status,
+  onStatusChange,
+  resultBanner,
+  productId = "default",
+}: Props) {
   const [open, setOpen] = useState(false);
-  const { isChecked, toggleStep } = useBreakdownState();
+  const { isChecked, toggleStep } = useBreakdownState(productId);
+  const outputConfig = item.outputKind ? OUTPUT_KIND_CONFIG[item.outputKind] : null;
 
   // A compound item (its real content is the breakdown) doesn't get its own
   // quick-toggle checkbox — checking off one box for "susun dokumen dengan 5
@@ -55,7 +99,11 @@ export default function ChecklistItem({ item, status, onStatusChange, resultBann
   }
 
   return (
-    <div className="rounded-lg border border-border-subtle bg-surface">
+    <div
+      className={`rounded-lg border border-border-subtle bg-surface border-l-4 ${
+        outputConfig ? outputConfig.border : "border-l-border-subtle"
+      }`}
+    >
       <div className="flex items-start gap-3 p-4">
         {!hasActionableBreakdown ? (
           <input
@@ -89,6 +137,13 @@ export default function ChecklistItem({ item, status, onStatusChange, resultBann
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <StatusPill status={status} />
+            {outputConfig ? (
+              <span
+                className={`inline-flex items-center rounded-pill px-2.5 py-1 text-[11px] font-semibold ${outputConfig.pillBg} ${outputConfig.pillText}`}
+              >
+                {outputConfig.label}
+              </span>
+            ) : null}
             {breakdownProgress ? (
               <span
                 className={`text-xs font-semibold ${
@@ -173,7 +228,41 @@ export default function ChecklistItem({ item, status, onStatusChange, resultBann
                 </div>
               ) : null}
 
-              <CitationChip label={item.citationLabel} type={item.citationType} url={item.citationUrl} />
+              <div className="flex flex-wrap items-center gap-2">
+                <CitationChip label={item.citationLabel} type={item.citationType} url={item.citationUrl} />
+                {item.templateRef ? (
+                  <a
+                    href={item.templateRef.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[12px] font-medium text-emerald-800 hover:opacity-80"
+                  >
+                    {item.templateRef.label} →
+                  </a>
+                ) : null}
+              </div>
+
+              {item.resources && item.resources.length > 0 ? (
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
+                    Ke mana harus pergi
+                  </p>
+                  <ul className="space-y-1">
+                    {item.resources.map((resource) => (
+                      <li key={resource.url}>
+                        <a
+                          href={resource.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[13px] font-medium text-brand hover:underline"
+                        >
+                          {resource.label} →
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </div>
           ) : null}
         </div>

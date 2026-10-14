@@ -66,6 +66,14 @@ export default function ProdukPage() {
           </p>
         </div>
 
+        {hydrated && products.length === 0 ? (
+          <div className="mt-8 rounded-lg border border-dashed border-border-subtle p-6 text-center">
+            <p className="text-sm text-ink-muted">
+              Belum ada produk. Tambahkan satu di bawah untuk mulai Compliance Checker-nya.
+            </p>
+          </div>
+        ) : null}
+
         <div className="mt-8 space-y-3">
           {products.map((product) => {
             const p = progress[product.id];
@@ -123,7 +131,7 @@ export default function ProdukPage() {
                     >
                       Ubah nama
                     </button>
-                    {products.length > 1 && product.id !== "default" ? (
+                    {product.id !== "default" ? (
                       <button
                         type="button"
                         onClick={() => {

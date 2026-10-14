@@ -4,17 +4,51 @@ import { kmk9512026, KMK_951_2026_SOURCE_URL, RegulationPart } from "@/lib/regul
 import { formatRegulationParagraphs } from "@/lib/formatRegulationText";
 import ClassificationFlowchart from "@/components/ClassificationFlowchart";
 import EvidenceTierTable from "@/components/EvidenceTierTable";
+import RegulationFigure from "@/components/RegulationFigure";
 
 // Parts whose run-on text includes a reference to a diagram/table the
 // original PDF renders as an image — Gambar 2.1 (p.9) and Tabel 3.2
-// (p.23-24) — get the real, readable version injected right after their
-// text instead of leaving the reader to picture a diagram from a sentence
-// naming it.
+// (p.23-24) — get the real page image (cropped straight from the source
+// PDF) injected right after their text, with the interactive
+// recreation underneath it so a reader can both see the authentic figure
+// and actually work through it.
 const DIAGRAM_AFTER_PART: Record<string, React.ReactNode> = {
-  "bab-2-3": <ClassificationFlowchart />,
+  "bab-2-3": (
+    <div className="space-y-4">
+      <RegulationFigure
+        src="/images/regulasi/gambar-2-1-klasifikasi.png"
+        alt="Gambar 2.1 Diagram Alir Klasifikasi Alat Kesehatan Berbasis Perangkat Lunak"
+        caption="Gambar 2.1 — diambil langsung dari dokumen resmi KMK No. HK.01.07/MENKES/951/2026."
+      />
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+          Versi interaktif — ikuti tiap gerbang
+        </p>
+        <div className="mt-2">
+          <ClassificationFlowchart />
+        </div>
+      </div>
+    </div>
+  ),
 };
 const TABLE_AFTER_PART: Record<string, React.ReactNode> = {
-  "bab-3-9": <EvidenceTierTable />,
+  "bab-3-9": (
+    <div className="space-y-4">
+      <RegulationFigure
+        src="/images/regulasi/tabel-3-2-bukti-klinis.png"
+        alt="Tabel 3.2 Bukti klinis yang dibutuhkan pada persyaratan izin edar alat kesehatan berbasis perangkat lunak"
+        caption="Tabel 3.2 — diambil langsung dari dokumen resmi KMK No. HK.01.07/MENKES/951/2026."
+      />
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+          Versi interaktif — terhubung dengan hasil Compliance Checker Anda
+        </p>
+        <div className="mt-2">
+          <EvidenceTierTable />
+        </div>
+      </div>
+    </div>
+  ),
 };
 
 const BAB_LABEL: Record<string, string> = {

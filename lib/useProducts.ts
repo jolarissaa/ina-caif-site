@@ -31,17 +31,40 @@ export const PRODUCT_SCOPED_BASE_KEYS = [
 
 const DEFAULT_PRODUCT: Product = { id: "default", name: "Produk Saya", createdAt: 0 };
 
+// The "default" product reuses the ORIGINAL unscoped storage keys (see
+// productStorage.ts), so its presence is detected the same way: those keys
+// existing means there's real checklist/questionnaire progress tracked
+// before this products feature existed.
+function hasLegacyDefaultProductData(): boolean {
+  try {
+    return (
+      window.localStorage.getItem("ina-caif-checklist-v1") !== null ||
+      window.localStorage.getItem("ina-caif-qualifying-v1") !== null
+    );
+  } catch {
+    return false;
+  }
+}
+
 function loadProducts(): Product[] {
   try {
     const raw = window.localStorage.getItem(PRODUCTS_KEY);
-    if (raw) {
+    // A products list was explicitly saved before (even an empty one, e.g.
+    // after deleting the last product) — respect it as-is rather than
+    // re-seeding anything.
+    if (raw !== null) {
       const parsed = JSON.parse(raw) as Product[];
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed)) return parsed;
     }
   } catch {
-    // Ignore malformed or inaccessible storage; fall through to default.
+    // Ignore malformed or inaccessible storage; fall through below.
   }
-  return [DEFAULT_PRODUCT];
+  // No products list has ever been saved — first-ever visit to /produk.
+  // Only seed the "default" product when there's real legacy progress to
+  // show; a genuinely new visitor starts with an empty list (0 products),
+  // not a pre-filled "Produk Saya" card — per Jo: "by default sblm apa
+  // hrsnya 0 dlu produknya, jgn ada 'produk saya'".
+  return hasLegacyDefaultProductData() ? [DEFAULT_PRODUCT] : [];
 }
 
 function saveProducts(products: Product[]) {
@@ -57,8 +80,12 @@ function makeProductId(): string {
 }
 
 export function useProducts() {
-  const [products, setProducts] = useState<Product[]>([DEFAULT_PRODUCT]);
-  const [activeProductId, setActiveProductIdState] = useState<string>("default");
+  // Starts as an empty list rather than [DEFAULT_PRODUCT] — the server-
+  // rendered/pre-hydration state should match what a brand-new visitor
+  // sees, not assume Jo's own legacy data. The real list (possibly
+  // including "default") is loaded from storage right after mount.
+  const [products, setProducts] = useState<Product[]>([]);
+  const [activeProductId, setActiveProductIdState] = useState<string>("");
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -69,10 +96,13 @@ export function useProducts() {
       if (activeRaw && loaded.some((p) => p.id === activeRaw)) {
         setActiveProductIdState(activeRaw);
       } else {
-        setActiveProductIdState(loaded[0].id);
+        // No valid stored active product — fall back to the first product
+        // in the list, or "" (no active product) when the list is empty,
+        // which is the normal state for a visitor who hasn't added one yet.
+        setActiveProductIdState(loaded[0]?.id ?? "");
       }
     } catch {
-      setActiveProductIdState(loaded[0].id);
+      setActiveProductIdState(loaded[0]?.id ?? "");
     } finally {
       setHydrated(true);
     }
@@ -110,32 +140,36 @@ export function useProducts() {
 
   // Removing a product also clears its own scoped checklist/questionnaire/
   // breakdown/ethics-context storage, and — if it was the active one —
-  // falls back to whichever product is now first in the list. The
-  // "default" product can never be removed: it's the only product
-  // guaranteed to exist, and the one holding data with no scoping to clean
-  // up safely.
+  // falls back to the "default" product when it still exists, otherwise
+  // whatever's now first in the list, otherwise "" (empty list is a valid
+  // state — see loadProducts above). The "default" product can never be
+  // removed this way: it's the one holding data with no per-product
+  // scoping to safely clean up.
   const removeProduct = useCallback(
     (id: string) => {
       if (id === "default") return;
-      setProducts((current) => {
-        if (current.length <= 1) return current;
-        const updated = current.filter((p) => p.id !== id);
-        saveProducts(updated);
-        return updated;
-      });
+      const updated = products.filter((p) => p.id !== id);
+      setProducts(updated);
+      saveProducts(updated);
       clearProductStorage(PRODUCT_SCOPED_BASE_KEYS, id);
       setActiveProductIdState((currentActive) => {
         if (currentActive !== id) return currentActive;
-        const fallback = "default";
+        const fallback = updated.some((p) => p.id === "default")
+          ? "default"
+          : updated[0]?.id ?? "";
         try {
-          window.localStorage.setItem(ACTIVE_KEY, fallback);
+          if (fallback) {
+            window.localStorage.setItem(ACTIVE_KEY, fallback);
+          } else {
+            window.localStorage.removeItem(ACTIVE_KEY);
+          }
         } catch {
           // Ignore.
         }
         return fallback;
       });
     },
-    []
+    [products]
   );
 
   return {

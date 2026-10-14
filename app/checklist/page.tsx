@@ -153,6 +153,32 @@ export default function ChecklistPage() {
 
   const showQuestionnaire = qualifyingHydrated && !answers.completed;
 
+  // Defensive: /checklist is normally only reached after a product exists
+  // (from /produk's "Buka" or "Tambah & Mulai Checklist"), but a direct
+  // visit, a stale tab, or deleting the only product while this page is
+  // open can land here with nothing active. Rather than silently showing
+  // (and writing into) a phantom "" product, send the visitor back to the
+  // product list.
+  if (productsHydrated && products.length === 0) {
+    return (
+      <>
+        <Header />
+        <main className="mx-auto max-w-content px-6 py-12">
+          <div className="rounded-lg border border-dashed border-border-subtle p-6 text-center">
+            <p className="text-sm text-ink-muted">
+              Belum ada produk yang dipilih.{" "}
+              <Link href="/produk" className="font-medium text-brand hover:underline">
+                Buka Produk Saya
+              </Link>{" "}
+              untuk menambah atau memilih satu.
+            </p>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
+
   return (
     <>
       <Header />
@@ -247,6 +273,7 @@ export default function ChecklistPage() {
                           status={statusMap[item.id] ?? item.defaultStatus}
                           onStatusChange={(status) => setStatus(item.id, status)}
                           resultBanner={itemResultBanners[item.id]}
+                          productId={activeProductId}
                         />
                       ))}
                     </div>

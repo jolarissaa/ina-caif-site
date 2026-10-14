@@ -40,7 +40,7 @@ export default function HomePage() {
         </section>
 
         <section className="mx-auto max-w-content px-6 pb-16">
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div className="grid items-stretch gap-6 sm:grid-cols-2">
             <FeatureCard
               href="/produk"
               title="Compliance Checker"

@@ -60,6 +60,28 @@ export type BreakdownStep = {
   actionable?: boolean;
 };
 
+// What kind of output an item actually asks for — so a reader can tell at
+// a glance whether this is something to watch out for while they build
+// (no artifact expected), or something they need to actually produce and
+// hand in. Per Jo: distinguish "warning, be careful about X" items from
+// real to-do items, and for the to-do items, flag whether there's an
+// official template to go fill in or whether it's free-form (no template
+// found for this item — so draft it yourself, in whatever format is
+// clearest).
+//   - "peringatan": a principle/practice to uphold, not a standalone
+//     deliverable (e.g. "watch for bias when choosing training data").
+//   - "dokumen-bebas": a real document/report is expected, but no official
+//     Kemenkes (or other body) template exists for it — write it freeform,
+//     covering the content this item and its breakdown describe.
+//   - "dokumen-template": a real document is expected AND an official
+//     template/form exists to fill in — see templateRef for where to get it.
+export type OutputKind = "peringatan" | "dokumen-bebas" | "dokumen-template";
+
+export type ResourceRef = {
+  label: string;
+  url: string;
+};
+
 export type ChecklistItem = {
   id: string;
   categoryId: string;
@@ -75,6 +97,18 @@ export type ChecklistItem = {
   // ISO 14971, WHO, FDA, IMDRF, UU PDP, etc.) rather than leaving the
   // reader to go translate a normative cross-reference themselves.
   breakdown?: BreakdownStep[];
+  // See OutputKind above. Left unset for items that are neither a clear
+  // warning nor a clear document ask (e.g. a one-off administrative or
+  // design decision) — not every item needs a badge.
+  outputKind?: OutputKind;
+  // Only meaningful when outputKind is "dokumen-template" — where to
+  // actually download/open that official template or submission system.
+  templateRef?: ResourceRef;
+  // Extra practical "where do I actually go for this" links beyond the
+  // regulation citation itself — a self-assessment tool, an official
+  // government portal/system, a downloadable Kemenkes procedure guide.
+  // Verified against the publisher's own site, same bar as SOURCES above.
+  resources?: ResourceRef[];
 };
 
 export type Category = {
@@ -306,6 +340,12 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    resources: [
+      {
+        label: "Portal OSS — perizinan berusaha & cek KBLI",
+        url: "https://oss.go.id",
+      },
+    ],
   },
   {
     id: "klasifikasi-3",
@@ -317,6 +357,16 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB2,
     defaultStatus: "belum",
+    resources: [
+      {
+        label: "Panduan 9 tingkat TKT/TRL — LPPM Universitas Padjadjaran",
+        url: "https://drhpm.unpad.ac.id/wp-content/uploads/2017/11/TRL-dan-Praktik-Pengukurannya.pdf",
+      },
+      {
+        label: "Permenristekdikti No. 42 Tahun 2016 (dasar hukum 9 tingkat TKT)",
+        url: "https://peraturan.go.id/files/bn1010-2016.pdf",
+      },
+    ],
   },
 
   // Dasar Perangkat Lunak
@@ -330,6 +380,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB2,
     defaultStatus: "belum",
+    outputKind: "dokumen-bebas",
     breakdown: [
       {
         text:
@@ -361,6 +412,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    outputKind: "dokumen-bebas",
     breakdown: [
       {
         text:
@@ -401,6 +453,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    outputKind: "dokumen-bebas",
   },
   {
     id: "dasar-4",
@@ -412,6 +465,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    outputKind: "dokumen-bebas",
     breakdown: [
       {
         text:
@@ -455,6 +509,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "paywalled",
     citationUrl: IEC_62304_URL,
     defaultStatus: "belum",
+    outputKind: "dokumen-bebas",
     breakdown: [
       {
         text:
@@ -499,6 +554,7 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
     condition: "ai",
+    outputKind: "dokumen-bebas",
   },
   {
     id: "ai-2",
@@ -511,6 +567,7 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
     condition: "ai",
+    outputKind: "dokumen-bebas",
   },
   {
     id: "ai-3",
@@ -523,6 +580,7 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
     condition: "ai",
+    outputKind: "dokumen-bebas",
   },
   {
     id: "ai-4",
@@ -535,6 +593,7 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
     condition: "ai",
+    outputKind: "dokumen-bebas",
   },
   {
     id: "ai-5",
@@ -547,6 +606,7 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
     condition: "ai",
+    outputKind: "dokumen-bebas",
   },
   {
     id: "ai-6",
@@ -559,6 +619,7 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
     condition: "ai",
+    outputKind: "dokumen-bebas",
   },
 
   // Pembelajaran Berkelanjutan & Model Generatif
@@ -573,6 +634,7 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
     condition: "continuousLearning",
+    outputKind: "dokumen-bebas",
     breakdown: [
       {
         text:
@@ -702,6 +764,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    outputKind: "dokumen-bebas",
     breakdown: [
       {
         text:
@@ -736,6 +799,7 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
     condition: "importLocalValidation",
+    outputKind: "dokumen-bebas",
   },
 
   // Penandaan
@@ -748,6 +812,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    outputKind: "dokumen-bebas",
   },
   {
     id: "penandaan-2",
@@ -759,6 +824,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    outputKind: "dokumen-bebas",
   },
   {
     id: "penandaan-3",
@@ -770,6 +836,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB3,
     defaultStatus: "belum",
+    outputKind: "dokumen-bebas",
   },
 
   // Etika & Good Machine Learning Practice
@@ -784,6 +851,7 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB4,
     defaultStatus: "belum",
     condition: "ai",
+    outputKind: "peringatan",
     breakdown: [
       {
         text:
@@ -812,6 +880,7 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB4,
     defaultStatus: "belum",
     condition: "ai",
+    outputKind: "peringatan",
   },
   {
     id: "etika-3",
@@ -824,6 +893,7 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB4,
     defaultStatus: "belum",
     condition: "ai",
+    outputKind: "peringatan",
     breakdown: [
       { text: "(a) Tujuan Penggunaan & Keahlian Multidisiplin — tujuan penggunaan dipahami jelas sejak awal, dan keahlian multidisiplin (klinis + teknis) dilibatkan sepanjang siklus hidup produk." },
       { text: "(b) Praktik Rekayasa Perangkat Lunak dan Mutu — manajemen risiko, pengendalian desain, tata kelola data, dan perlindungan keamanan siber diterapkan sebagai satu kesatuan praktik rekayasa, bukan langkah terpisah-pisah." },
@@ -848,13 +918,14 @@ export const checklistItems: ChecklistItem[] = [
     citationUrl: KMK_BAB4,
     defaultStatus: "belum",
     condition: "ai",
+    outputKind: "peringatan",
   },
   {
     id: "etika-5",
     categoryId: "etika-gmlp",
     title: "Jamin akses yang setara bagi pengguna terhadap teknologi yang dikembangkan.",
     explanation:
-      "Setiap pengguna punya hak yang sama untuk mengakses teknologi demi kepentingannya, dengan tetap menjaga prinsip etika, keselamatan, keamanan, dan kinerja alat kesehatan. KMK menyebut prinsip ini apa adanya tanpa metode operasional untuk membuktikan pemenuhannya — murni prinsip dari Kemenkes sendiri, belum ada panduan teknis lebih lanjut untuk ditambahkan di sini.",
+      "Setiap pengguna punya hak yang sama untuk mengakses teknologi demi kepentingannya, dengan tetap menjaga prinsip etika, keselamatan, keamanan, dan kinerja alat kesehatan.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab IV.A.1 (prinsip Aksesibilitas)",
     citationType: "free",
     citationUrl: KMK_BAB4,
@@ -866,7 +937,7 @@ export const checklistItems: ChecklistItem[] = [
     categoryId: "etika-gmlp",
     title: "Tunduk pada ketentuan Hak Kekayaan Intelektual (HKI) yang berlaku dalam penyelenggaraan produk.",
     explanation:
-      "Penyelenggaraan alat kesehatan berbasis perangkat lunak tunduk pada prinsip pelindungan HKI sesuai ketentuan peraturan perundang-undangan. Sama seperti aksesibilitas, KMK menyebutkan ini sebagai prinsip tanpa detail operasional — murni permintaan Kemenkes sendiri, belum ada panduan teknis tambahan yang bisa dirujuk di sini.",
+      "Penyelenggaraan alat kesehatan berbasis perangkat lunak tunduk pada prinsip pelindungan HKI sesuai ketentuan peraturan perundang-undangan.",
     citationLabel: "KMK No. HK.01.07/MENKES/951/2026, Bab IV.A.1 (prinsip Pelindungan Kekayaan Intelektual)",
     citationType: "free",
     citationUrl: KMK_BAB4,
@@ -906,6 +977,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: UU_PDP_URL,
     defaultStatus: "belum",
+    outputKind: "dokumen-bebas",
     breakdown: [
       {
         text:
@@ -939,6 +1011,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: PERMENKES_REKAM_MEDIS_URL,
     defaultStatus: "belum",
+    outputKind: "peringatan",
   },
 
   // Pasca-Pemasaran
@@ -951,6 +1024,13 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB5,
     defaultStatus: "belum",
+    outputKind: "dokumen-bebas",
+    resources: [
+      {
+        label: "Tata Cara Pelaporan KTD Alat Kesehatan — Kemenkes (Ditjen Farmalkes)",
+        url: "https://farmalkes.kemkes.go.id/unduh/tata-cara-pelaporan-kejadian-tidak-diinginkan-ktd-alat-kesehatan/",
+      },
+    ],
   },
   {
     id: "pasca-2",
@@ -961,6 +1041,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB5,
     defaultStatus: "belum",
+    outputKind: "peringatan",
   },
   {
     id: "pasca-3",
@@ -971,6 +1052,7 @@ export const checklistItems: ChecklistItem[] = [
     citationType: "free",
     citationUrl: KMK_BAB5,
     defaultStatus: "belum",
+    outputKind: "peringatan",
   },
   {
     id: "pasca-4",

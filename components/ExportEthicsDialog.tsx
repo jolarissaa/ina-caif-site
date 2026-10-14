@@ -48,6 +48,19 @@ export default function ExportEthicsDialog({ open, onClose, productId = "default
               Jika ya, Anda bisa melengkapi beberapa informasi singkat terlebih dahulu agar
               komite etik memiliki konteks sebelum membaca checklist ini.
             </p>
+            <p className="mt-3 text-xs text-ink-muted">
+              Ringkasan ini melengkapi, bukan menggantikan, protokol penelitian resmi yang
+              diajukan ke komite etik institusi Anda atau melalui{" "}
+              <a
+                href="https://kepkn.kemkes.go.id"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-brand hover:underline"
+              >
+                portal KEPKN
+              </a>
+              .
+            </p>
             <div className="mt-6 flex flex-wrap justify-end gap-3">
               <button
                 type="button"
