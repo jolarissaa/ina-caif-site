@@ -122,9 +122,21 @@ export default function ChecklistItem({
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
+            data-tutorial={
+              item.id === "klasifikasi-3"
+                ? "item-expand-button"
+                : item.id === "dasar-1"
+                ? "item-dasar1-expand-button"
+                : undefined
+            }
             className="flex w-full items-start justify-between gap-3 text-left"
           >
-            <span className="text-[15px] leading-[22px] text-ink">{item.title}</span>
+            <span
+              data-tutorial={item.id === "klasifikasi-2" ? "item-main-text" : undefined}
+              className="text-[15px] leading-[22px] text-ink"
+            >
+              {item.title}
+            </span>
             <svg
               className={`mt-1 h-4 w-4 flex-shrink-0 text-ink-muted transition-transform ${
                 open ? "rotate-180" : ""
@@ -144,7 +156,11 @@ export default function ChecklistItem({
                 <outputIcon.Icon className="h-4 w-4" />
               </span>
             ) : null}
-            {item.regalkesForm ? <FormBadge form={item.regalkesForm} /> : null}
+            {item.regalkesForm ? (
+              <span data-tutorial={item.id === "dasar-1" ? "item-form-badge" : undefined}>
+                <FormBadge form={item.regalkesForm} />
+              </span>
+            ) : null}
             {breakdownProgress ? (
               <span
                 className={`text-xs font-semibold ${
@@ -173,7 +189,10 @@ export default function ChecklistItem({
                 {status === "selesai" ? "✓ Sudah diperhatikan" : "Tandai sudah diperhatikan"}
               </button>
             ) : (
-              <>
+              <span
+                data-tutorial={item.id === "klasifikasi-2" ? "item-status-control" : undefined}
+                className="inline-flex items-center gap-2"
+              >
                 <StatusPill status={status} />
                 <select
                   value={status}
@@ -187,12 +206,15 @@ export default function ChecklistItem({
                     </option>
                   ))}
                 </select>
-              </>
+              </span>
             )}
           </div>
 
           {open ? (
-            <div className="mt-3 space-y-3 border-t border-border-subtle pt-3">
+            <div
+              data-tutorial={item.id === "klasifikasi-3" ? "item-tkt9-detail" : undefined}
+              className="mt-3 space-y-3 border-t border-border-subtle pt-3"
+            >
               {/* The narrative/"storyline" framing Jo asked for: what this
                   item is about, grounded in its own citation right
                   underneath — mirroring RegulationQuote's category-level
@@ -200,7 +222,10 @@ export default function ChecklistItem({
                   actually do with it. */}
               <blockquote className="rounded-md border-l-4 border-brand bg-brand/5 px-4 py-3">
                 <p className="text-sm leading-[22px] text-ink">{item.explanation}</p>
-                <footer className="mt-2 flex flex-wrap items-center gap-1.5">
+                <footer
+                  data-tutorial={item.id === "dasar-1" ? "item-dasar1-citation" : undefined}
+                  className="mt-2 flex flex-wrap items-center gap-1.5"
+                >
                   <CitationChip label={item.citationLabel} type={item.citationType} url={item.citationUrl} />
                 </footer>
               </blockquote>
@@ -208,7 +233,10 @@ export default function ChecklistItem({
               {resultBanner}
 
               {item.breakdown && item.breakdown.length > 0 ? (
-                <div className="rounded-md border border-border-subtle bg-surface-alt p-3">
+                <div
+                  data-tutorial={item.id === "dasar-1" ? "item-rincian-teknis" : undefined}
+                  className="rounded-md border border-border-subtle bg-surface-alt p-3"
+                >
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
                     {hasActionableBreakdown ? "Rincian teknis — checklist" : "Rincian teknis"}
                   </p>
@@ -224,7 +252,10 @@ export default function ChecklistItem({
                             <span>
                               {step.text}
                               {step.source ? (
-                                <div className="mt-1.5">
+                                <div
+                                  data-tutorial={item.id === "dasar-1" ? "item-iso-badge" : undefined}
+                                  className="mt-1.5"
+                                >
                                   <SourceBadge {...step.source} />
                                 </div>
                               ) : null}
@@ -285,7 +316,7 @@ export default function ChecklistItem({
                     Simpan Template
                   </a>
                   <span className="text-[11px] text-ink-muted">
-                    Struktur yang disarankan INA-CAIF — bukan formulir resmi Kemenkes
+                    Struktur ini merupakan saran penyusunan dan bukan formulir resmi Kemenkes
                   </span>
                 </div>
               ) : null}

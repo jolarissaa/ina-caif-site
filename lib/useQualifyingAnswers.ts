@@ -35,6 +35,12 @@ export type QualifyingAnswers = {
   continuousLearning: boolean | null;
   generative: boolean | null;
   importLocalValidation: boolean | null;
+  // Which of the checklist's two purposes the person picked before
+  // starting: tracking an izin edar submission, or preparing material for
+  // a research ethics committee. Asked as an explicit choice at the start
+  // of the questionnaire (see IntroNarration in QualifyingQuestionnaire) —
+  // null only before that choice has been made.
+  purpose: "izin-edar" | "etik" | null;
   completed: boolean;
 };
 
@@ -52,6 +58,7 @@ const DEFAULT_ANSWERS: QualifyingAnswers = {
   continuousLearning: null,
   generative: null,
   importLocalValidation: null,
+  purpose: null,
   completed: false,
 };
 

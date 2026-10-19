@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { QualifyingAnswers } from "@/lib/useQualifyingAnswers";
+import { RINGKASAN_MAX_LENGTH, useEthicsContext } from "@/lib/useEthicsContext";
 import { categoryQuotes } from "@/lib/checklistData";
 import RegulationQuote from "./RegulationQuote";
 import { StampIcon, EthicsIcon } from "./icons";
@@ -20,6 +21,7 @@ type Props = {
   initialAnswers: QualifyingAnswers;
   onSubmit: (answers: Partial<Omit<QualifyingAnswers, "completed">>) => void;
   onSkip: () => void;
+  productId?: string;
 };
 
 type YesNoFieldProps = {
@@ -112,61 +114,61 @@ function ResultPreview({ children }: { children: React.ReactNode }) {
   );
 }
 
-// The pre-"start" narration Jo asked for: before any gate is answered,
-// explain — like a short game intro, not a wall of legal text — that
-// what follows serves two different purposes, and that the same answers
-// feed both. Shown once per visit to the questionnaire (resets if they
-// leave and come back via "Ubah jawaban profil produk", which is fine —
-// it's a two-sentence reminder, not an onboarding flow that needs
-// one-time tracking).
-function IntroNarration({ onStart, onSkip }: { onStart: () => void; onSkip: () => void }) {
+// Purpose picker shown before any gate is answered. The longer "dua tujuan
+// sekaligus" framing now lives on the homepage — here it's just the
+// explicit choice itself: pick one of the two cards to start. Choosing
+// "Komite etik" is what makes the ethics-context fields appear later in
+// this same flow (see EthicsContextFields below) instead of only showing
+// up behind the export dialog on /checklist.
+function PurposeStep({
+  onChoose,
+  onSkip,
+}: {
+  onChoose: (purpose: "izin-edar" | "etik") => void;
+  onSkip: () => void;
+}) {
   return (
     <div>
       <h2 className="font-display text-lg font-semibold text-ink">
-        Checklist ini punya dua tujuan sekaligus
+        Checklist ini untuk apa?
       </h2>
       <p className="mt-2 text-sm leading-[22px] text-ink-muted">
-        Jawaban Anda di langkah berikutnya dipakai untuk dua hal yang berbeda — pilih tujuan mana
-        yang relevan untuk Anda saat ini, keduanya tetap bisa dipakai bersamaan nanti.
+        Pilih salah satu untuk mulai. Pertanyaan di langkah berikutnya sama untuk keduanya, hanya
+        hasil di akhirnya yang beda.
       </p>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-md border border-border-subtle bg-surface p-4">
+        <button
+          type="button"
+          onClick={() => onChoose("izin-edar")}
+          className="rounded-md border border-border-subtle bg-surface p-4 text-left hover:border-brand"
+        >
           <div className="flex items-center gap-2 text-brand">
             <StampIcon className="h-5 w-5" />
             <p className="text-sm font-semibold text-ink">Menyiapkan izin edar</p>
           </div>
           <p className="mt-2 text-xs leading-[18px] text-ink-muted">
-            Checklist lengkap membantu Anda melacak dokumen dan bukti yang perlu disiapkan untuk
-            mengajukan izin edar ke Kemenkes lewat Regalkes.
+            Lacak dokumen dan bukti yang perlu disiapkan sebelum mengajukan izin edar lewat
+            Regalkes Kemenkes.
           </p>
-        </div>
-        <div className="rounded-md border border-border-subtle bg-surface p-4">
-          <div className="flex items-center gap-2 text-brand">
-            <EthicsIcon className="h-5 w-5" />
-            <p className="text-sm font-semibold text-ink">Menyiapkan data untuk komite etik</p>
-          </div>
-          <p className="mt-2 text-xs leading-[18px] text-ink-muted">
-            Jika produk ini bagian dari penelitian di RS pendidikan, checklist yang sama
-            menyiapkan ringkasan khusus untuk komite etik (KEPKN) — hanya langkah yang relevan
-            secara etik, bukan seluruh butir administratif izin edar.
-          </p>
-        </div>
-      </div>
-
-      <p className="mt-3 text-xs text-ink-muted">
-        Langkah berikutnya menentukan klasifikasi produk Anda (SaMD/SiMD) dan profil AI-nya —
-        hasil ini yang nanti menyaring checklist dan ringkasan komite etik secara otomatis.
-      </p>
-
-      <div className="mt-5 flex flex-wrap items-center gap-3">
+        </button>
         <button
           type="button"
-          onClick={onStart}
-          className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-dark"
+          onClick={() => onChoose("etik")}
+          className="rounded-md border border-border-subtle bg-surface p-4 text-left hover:border-brand"
         >
-          Mulai
+          <div className="flex items-center gap-2 text-brand">
+            <EthicsIcon className="h-5 w-5" />
+            <p className="text-sm font-semibold text-ink">Komite etik</p>
+          </div>
+          <p className="mt-2 text-xs leading-[18px] text-ink-muted">
+            Untuk produk yang sedang diteliti di RS pendidikan. Anda akan diminta mengisi konteks
+            singkat untuk tim etik sebelum masuk ke checklist.
+          </p>
         </button>
+      </div>
+
+      <div className="mt-5">
         <button
           type="button"
           onClick={onSkip}
@@ -175,6 +177,94 @@ function IntroNarration({ onStart, onSkip }: { onStart: () => void; onSkip: () =
           Lewati, tampilkan semua butir
         </button>
       </div>
+    </div>
+  );
+}
+
+// Shown as the last step of the questionnaire only when purpose === "etik"
+// — the same "Konteks untuk Tim Etik" fields ExportEthicsDialog used to
+// collect after the fact, moved here so they're filled in once, upfront,
+// and export can be a single direct action afterward with nothing left to
+// ask (see ExportEthicsDialog and the bottom CTA on /checklist).
+function EthicsContextFields({ productId }: { productId?: string }) {
+  const { context, updateField } = useEthicsContext(productId);
+  return (
+    <div className="mt-5 space-y-3">
+      <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+        Konteks untuk Tim Etik
+      </p>
+      <p className="text-sm leading-[22px] text-ink-muted">
+        Isian ini melengkapi, bukan menggantikan, protokol penelitian resmi yang diajukan ke
+        komite etik (KEPKN). Singkat saja, cukup untuk memberi orientasi awal.
+      </p>
+      <div className="rounded-md border border-border-subtle bg-surface p-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <EthicsField
+            label="Judul Proyek atau Sistem"
+            value={context.judulProyek}
+            onChange={(v) => updateField("judulProyek", v)}
+          />
+          <EthicsField
+            label="Institusi"
+            value={context.institusi}
+            onChange={(v) => updateField("institusi", v)}
+          />
+          <EthicsField
+            label="Nama Peneliti Utama"
+            value={context.namaPenelitiUtama}
+            onChange={(v) => updateField("namaPenelitiUtama", v)}
+          />
+          <EthicsField
+            label="Lokasi"
+            value={context.lokasi}
+            onChange={(v) => updateField("lokasi", v)}
+          />
+          <EthicsField
+            label="Perkiraan Waktu Pelaksanaan"
+            value={context.perkiraanWaktu}
+            onChange={(v) => updateField("perkiraanWaktu", v)}
+          />
+        </div>
+        <div className="mt-4">
+          <label className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+            Ringkasan Singkat (maksimal {RINGKASAN_MAX_LENGTH} karakter)
+          </label>
+          <textarea
+            value={context.ringkasan}
+            onChange={(e) => updateField("ringkasan", e.target.value.slice(0, RINGKASAN_MAX_LENGTH))}
+            rows={3}
+            className="mt-1.5 w-full rounded-md border border-border-subtle bg-surface px-3 py-2 text-sm text-ink"
+            placeholder="Jelaskan tujuan dan cara kerja sistem dalam dua sampai tiga kalimat."
+          />
+          <p className="mt-1 text-right text-xs text-ink-muted">
+            {context.ringkasan.length} / {RINGKASAN_MAX_LENGTH}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EthicsField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div>
+      <label className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+        {label}
+      </label>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-1.5 w-full rounded-md border border-border-subtle bg-surface px-3 py-2 text-sm text-ink"
+      />
     </div>
   );
 }
@@ -200,15 +290,21 @@ const INFORMATION_ROLE_OPTIONS: { value: InformationRole; label: string }[] = [
 // from KMK 951/2026 so the person is told their classification and
 // required evidence tier directly, rather than being left to work out
 // "klasifikasi-1"/"klinis-1" on their own with no feedback.
-export default function QualifyingQuestionnaire({ initialAnswers, onSubmit, onSkip }: Props) {
-  // Whether the visitor has pressed "Mulai" past the intro narration below.
+export default function QualifyingQuestionnaire({
+  initialAnswers,
+  onSubmit,
+  onSkip,
+  productId,
+}: Props) {
+  // Whether the visitor has picked a purpose and moved past PurposeStep.
   // Defaults to true once any gate already has an answer (e.g. they're
-  // revisiting via "Ubah jawaban profil produk") — the intro is a one-time
-  // framing, not something a returning visitor should have to click through
+  // revisiting via "Ubah jawaban profil produk") — the picker is a one-time
+  // choice, not something a returning visitor should have to click through
   // again to see their own in-progress answers.
   const [started, setStarted] = useState<boolean>(
     initialAnswers.controlsDeviceFunction !== null || initialAnswers.usesAi !== null
   );
+  const [purpose, setPurpose] = useState<"izin-edar" | "etik" | null>(initialAnswers.purpose);
 
   // Gambar 2.1 gates.
   const [controlsDeviceFunction, setControlsDeviceFunction] = useState<boolean | null>(
@@ -262,7 +358,13 @@ export default function QualifyingQuestionnaire({ initialAnswers, onSubmit, onSk
   if (!started) {
     return (
       <div className="mt-8 max-w-2xl rounded-lg border border-border-subtle bg-surface-alt p-6">
-        <IntroNarration onStart={() => setStarted(true)} onSkip={onSkip} />
+        <PurposeStep
+          onChoose={(value) => {
+            setPurpose(value);
+            setStarted(true);
+          }}
+          onSkip={onSkip}
+        />
       </div>
     );
   }
@@ -425,6 +527,8 @@ export default function QualifyingQuestionnaire({ initialAnswers, onSubmit, onSk
         />
       </div>
 
+      {purpose === "etik" ? <EthicsContextFields productId={productId} /> : null}
+
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <button
           type="button"
@@ -442,6 +546,7 @@ export default function QualifyingQuestionnaire({ initialAnswers, onSubmit, onSk
               continuousLearning,
               generative,
               importLocalValidation,
+              purpose,
             })
           }
           className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-dark disabled:cursor-not-allowed disabled:opacity-50"

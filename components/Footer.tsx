@@ -17,7 +17,7 @@ export default function Footer() {
       />
       <div className="relative mx-auto max-w-content px-6 py-9">
         <p className="text-xs leading-[18px] text-white/80">
-          INA-CAIF, 2026 · Dibangun di bawah Young Leaders for Indonesia.
+          INA-CAIF, 2026 · Didukung oleh Young Leaders for Indonesia.
         </p>
       </div>
     </footer>

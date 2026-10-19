@@ -12,7 +12,13 @@ import CategoryProgressPanel from "@/components/CategoryProgressPanel";
 import ClassificationSummary from "@/components/ClassificationSummary";
 import EvidenceTierBadges from "@/components/EvidenceTierBadges";
 import Link from "next/link";
-import { categories, checklistItems, categoryQuotes, isItemVisible } from "@/lib/checklistData";
+import {
+  categories,
+  checklistItems,
+  categoryQuotes,
+  isItemVisible,
+  KEMENKES_SUBMISSION_GUIDE_URL,
+} from "@/lib/checklistData";
 import { useChecklistState } from "@/lib/useChecklistState";
 import { useQualifyingAnswers } from "@/lib/useQualifyingAnswers";
 import { useProducts } from "@/lib/useProducts";
@@ -144,7 +150,12 @@ export default function ChecklistPage() {
         </div>
 
         {showQuestionnaire ? (
-          <QualifyingQuestionnaire initialAnswers={answers} onSubmit={submit} onSkip={markCompleted} />
+          <QualifyingQuestionnaire
+            initialAnswers={answers}
+            onSubmit={submit}
+            onSkip={markCompleted}
+            productId={activeProductId}
+          />
         ) : (
           <>
             {classification ? (
@@ -219,35 +230,51 @@ export default function ChecklistPage() {
                   <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
                     Langkah selanjutnya
                   </p>
-                  <h3 className="mt-1 font-display text-base font-semibold text-ink">
-                    Checklist ini membantu Anda melacak progres — bukan pengganti penilaian
-                    komite etik
-                  </h3>
-                  <p className="mt-2 max-w-2xl text-sm leading-[22px] text-ink-muted">
-                    INA-CAIF membantu memperjelas dokumen dan bukti apa saja yang perlu
-                    disiapkan, berdasarkan jawaban kuesioner profil produk Anda. Keputusan akhir
-                    tetap ada pada komite etik penelitian kesehatan (KEPKN) dan proses pengajuan
-                    izin edar ke Kemenkes. Setelah checklist ini cukup lengkap, gunakan tombol di
-                    bawah untuk menyiapkan ringkasan yang bisa dikirim ke komite etik, atau
-                    pelajari kembali cara mengajukan izin edar.
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setExportDialogOpen(true)}
-                      className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-dark"
-                    >
-                      Siapkan Ringkasan untuk Komite Etik
-                    </button>
-                    <a
-                      href="https://regalkes.kemkes.go.id"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center rounded-md border border-border-subtle px-4 py-2 text-sm font-semibold text-ink hover:border-brand hover:text-brand"
-                    >
-                      Cara Mengajukan Izin Edar
-                    </a>
-                  </div>
+                  {answers.purpose === "etik" ? (
+                    <>
+                      <h3 className="mt-1 font-display text-base font-semibold text-ink">
+                        Konteks untuk tim etik sudah terisi. Tinggal ekspor.
+                      </h3>
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        <Link
+                          href="/checklist/cetak?etik=1"
+                          className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-dark"
+                        >
+                          Ekspor untuk Komite Etik
+                        </Link>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="mt-1 font-display text-base font-semibold text-ink">
+                        Checklist ini membantu Anda melacak progres, bukan pengganti penilaian
+                        komite etik
+                      </h3>
+                      <p className="mt-2 max-w-2xl text-sm leading-[22px] text-ink-muted">
+                        Keputusan akhir tetap ada pada Kemenkes dan komite etik penelitian
+                        kesehatan (KEPKN). Setelah checklist ini cukup lengkap, pelajari cara
+                        mengajukan izin edar, atau siapkan ringkasan untuk komite etik bila
+                        produk ini juga sedang diteliti.
+                      </p>
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        <a
+                          href={KEMENKES_SUBMISSION_GUIDE_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-dark"
+                        >
+                          Cara Mengajukan Izin Edar
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => setExportDialogOpen(true)}
+                          className="inline-flex items-center rounded-md border border-border-subtle px-4 py-2 text-sm font-semibold text-ink hover:border-brand hover:text-brand"
+                        >
+                          Siapkan Ringkasan untuk Komite Etik
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 

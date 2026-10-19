@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FeatureCard from "@/components/FeatureCard";
 import RegulationBreakdown from "@/components/RegulationBreakdown";
-import { AUTHOR } from "@/lib/siteConfig";
+import HowItWorksSection from "@/components/HowItWorksSection";
 
 export default function HomePage() {
   return (
@@ -20,15 +20,15 @@ export default function HomePage() {
             Indonesia Clinical AI Audit &amp; Governance Framework
           </p>
           <p className="mt-3 max-w-xl text-sm leading-[22px] text-ink-muted">
-            Menerjemahkan regulasi kesehatan menjadi langkah teknis yang jelas — termasuk
-            kesiapan dokumen sebelum{" "}
+            Menerjemahkan regulasi kesehatan jadi langkah teknis yang jelas, termasuk kesiapan
+            dokumen sebelum{" "}
             <a
               href="https://regalkes.kemkes.go.id"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-brand hover:underline"
             >
-              mengajukan izin edar melalui Regalkes Kemenkes
+              mengajukan izin edar lewat Regalkes Kemenkes
             </a>
             .
           </p>
@@ -58,6 +58,35 @@ export default function HomePage() {
         </section>
 
         <section className="border-y border-border-subtle bg-surface-alt">
+          <div className="mx-auto max-w-content px-6 py-14">
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+              Cara kerja INA-CAIF
+            </p>
+            <h2 className="mt-1 font-display text-xl font-semibold text-ink">
+              Dari tujuan Anda sampai siap diajukan
+            </h2>
+            <div className="mt-8 overflow-x-auto pb-2">
+              <HowItWorksSection />
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-content px-6 py-16">
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+            Dua tujuan, satu checklist
+          </p>
+          <h2 className="mt-1 font-display text-xl font-semibold text-ink">
+            Izin edar atau komite etik, Anda yang pilih
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-[22px] text-ink-muted">
+            Checklist yang sama bisa dipakai untuk dua hal: menyiapkan dokumen izin edar, atau
+            menyiapkan ringkasan untuk komite etik kalau produk Anda masih tahap penelitian atau
+            uji coba. Saat mulai checklist, Anda tinggal pilih salah satu, sisanya menyesuaikan
+            dengan sendirinya.
+          </p>
+        </section>
+
+        <section className="border-y border-border-subtle bg-surface-alt">
           <div className="mx-auto max-w-content px-6 py-12">
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
               Dari mana checklist ini berasal
@@ -66,9 +95,9 @@ export default function HomePage() {
               Satu regulasi, dipecah menjadi tahapan yang bisa diikuti
             </h2>
             <p className="mt-2 max-w-xl text-sm leading-[22px] text-ink-muted">
-              INA-CAIF menerjemahkan KMK No. HK.01.07/MENKES/951/2026 menjadi tahapan-tahapan
-              di Compliance Checker. Setiap tahap juga merujuk pada standar internasional yang
-              relevan — bukan dasar hukum yang berdiri sendiri, tapi rujukan teknis yang
+              INA-CAIF menerjemahkan KMK No. HK.01.07/MENKES/951/2026 menjadi tahapan-tahapan di
+              Compliance Checker. Setiap tahap juga merujuk pada standar internasional yang
+              relevan, bukan sebagai dasar hukum tersendiri, tapi sebagai rujukan teknis yang
               memperjelas cara memenuhinya.
             </p>
             <div className="mt-6 max-w-xl">
@@ -83,14 +112,14 @@ export default function HomePage() {
               Perlu diketahui
             </p>
             <h2 className="mt-1 font-display text-xl font-semibold text-ink">
-              Alat bantu persiapan — bukan pengganti proses resmi
+              Alat bantu persiapan, bukan pengganti proses resmi
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-[22px] text-ink-muted">
               INA-CAIF membantu Anda memahami, langkah demi langkah, dokumen dan bukti apa yang
-              diminta sebelum mengajukan izin edar perangkat lunak kesehatan berbasis AI —
-              sekaligus menjadi alat untuk melacak progres kesiapan tim Anda sendiri. Checklist
-              ini tidak menggantikan proses resmi: keputusan klasifikasi, evaluasi bukti klinis,
-              dan persetujuan tetap berada pada Kementerian Kesehatan dan komite etik penelitian
+              diminta sebelum mengajukan izin edar perangkat lunak kesehatan berbasis AI,
+              sekaligus jadi alat untuk melacak progres kesiapan tim Anda sendiri. Checklist ini
+              tidak menggantikan proses resmi: keputusan klasifikasi, evaluasi bukti klinis, dan
+              persetujuan tetap ada pada Kementerian Kesehatan dan komite etik penelitian
               kesehatan. Untuk proses pengajuan yang sebenarnya, rujuk selalu ke{" "}
               <a
                 href="https://regalkes.kemkes.go.id"
@@ -106,54 +135,48 @@ export default function HomePage() {
               </a>
               .
             </p>
-            <div className="mt-5 flex items-center gap-3">
-              {AUTHOR.photoSrc ? (
-                <img
-                  src={AUTHOR.photoSrc}
-                  alt={AUTHOR.name}
-                  className="h-10 w-10 flex-shrink-0 rounded-full border border-border-subtle object-cover grayscale"
-                />
-              ) : null}
-              <p className="text-xs leading-[18px] text-ink-muted">
-                Dikembangkan oleh {AUTHOR.name}, mahasiswa Teknologi Kedokteran, sebagai proyek
-                kepemimpinan di bawah Young Leaders for Indonesia
-                {AUTHOR.linkedinUrl ? (
-                  <>
-                    {" "}
-                    ·{" "}
-                    <a
-                      href={AUTHOR.linkedinUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-medium text-brand hover:underline"
-                    >
-                      LinkedIn
-                    </a>
-                  </>
-                ) : null}
-                .
-              </p>
-            </div>
           </div>
         </section>
 
         <section className="mx-auto max-w-content px-6 py-16">
-          <div className="rounded-lg border border-border-subtle bg-surface-alt p-8">
-            <h2 className="font-display text-xl font-semibold text-ink">
-              Bantu kami memetakan kesulitan yang dialami
-            </h2>
-            <p className="mt-3 max-w-xl text-sm leading-[22px] text-ink-muted">
-              Survei singkat untuk dokter, engineer, maupun tenaga lain yang pernah membangun
-              atau terlibat dalam software berbasis AI di bidang kesehatan.
-            </p>
-            <a
-              href="https://its.id/m/INACAIF"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 inline-flex rounded-md bg-accent px-5 py-3 text-sm font-semibold text-on-accent hover:opacity-90"
-            >
-              Isi Survei
-            </a>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div className="rounded-lg border border-border-subtle bg-surface-alt p-8">
+              <h2 className="font-display text-xl font-semibold text-ink">
+                Bantu kami memetakan kesulitan yang dialami
+              </h2>
+              <p className="mt-3 text-sm leading-[22px] text-ink-muted">
+                Survei singkat untuk dokter, engineer, maupun tenaga lain yang pernah membangun
+                atau terlibat dalam software berbasis AI di bidang kesehatan.
+              </p>
+              <a
+                href="https://its.id/m/INACAIF"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex rounded-md bg-accent px-5 py-3 text-sm font-semibold text-on-accent hover:opacity-90"
+              >
+                Isi Survei
+              </a>
+            </div>
+
+            <div className="rounded-lg border border-border-subtle bg-surface p-8">
+              <h2 className="font-display text-base font-semibold text-ink">
+                Masukan untuk situs ini sendiri
+              </h2>
+              <p className="mt-3 text-sm leading-[22px] text-ink-muted">
+                Bukan tentang regulasinya, tapi tentang INA-CAIF sebagai situs: ada yang
+                membingungkan, kurang jelas, atau bisa diperbaiki? Masukan singkat sangat
+                membantu.
+              </p>
+              <a
+                href="https://forms.gle/c5r2ZZi9A9D2sBfLA"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline"
+              >
+                Beri Masukan untuk Situs Ini
+                <span aria-hidden>→</span>
+              </a>
+            </div>
           </div>
         </section>
       </main>

@@ -1,20 +1,26 @@
 "use client";
 
 import { useTutorial } from "@/lib/useTutorial";
-import { useRouter, usePathname } from "next/navigation";
+import { useProducts } from "@/lib/useProducts";
+import { useRouter } from "next/navigation";
 
 // The top-right "Mode Tutorial" button Jo asked for, for first-time
 // visitors to trigger a guided walkthrough on demand rather than being
-// forced through one. Lives in Header, so it's available on every page; the
-// tour itself always starts from the homepage (see lib/tutorialSteps.ts),
-// so this navigates there first when clicked from anywhere else.
+// forced through one. The tour now walks through an actual product's
+// checklist (see lib/tutorialSteps.ts) rather than the homepage, so this
+// needs a product to exist first — with none yet, it sends the visitor to
+// /produk instead of starting a tour with nothing to spotlight.
 export default function TutorialTrigger() {
   const { start } = useTutorial();
+  const { products, hydrated } = useProducts();
   const router = useRouter();
-  const pathname = usePathname();
 
   function handleClick() {
-    if (pathname !== "/") router.push("/");
+    if (hydrated && products.length === 0) {
+      router.push("/produk");
+      return;
+    }
+    router.push("/checklist");
     start();
   }
 

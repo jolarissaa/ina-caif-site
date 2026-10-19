@@ -183,6 +183,14 @@ export type CategoryQuote = {
   sourceUrl: string;
 };
 
+// Official Kemenkes PDF guide for the izin edar submission process itself
+// (Forms A–E, the e-Regalkes interface, file-upload steps) — used by the
+// "Cara Mengajukan Izin Edar" button on /checklist and the Form A/B/C
+// pre-checklist explainer. Linked directly to the PDF, not the Regalkes
+// website, per Jo's request.
+export const KEMENKES_SUBMISSION_GUIDE_URL =
+  "https://regalkes.kemkes.go.id/informasi_alkes/Indonesia%20Guideline%20for%20Evaluation%20of%20Medical%20Device%20and%20IVD%202020.pdf";
+
 const KMK_BAB2 = "/regulasi/kmk-951-2026#bab-2";
 const KMK_BAB3 = "/regulasi/kmk-951-2026#bab-3";
 const KMK_BAB4 = "/regulasi/kmk-951-2026#bab-4";

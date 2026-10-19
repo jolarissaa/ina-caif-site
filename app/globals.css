@@ -7,11 +7,20 @@
     @apply scroll-smooth;
   }
   body {
-    @apply bg-surface text-ink font-body text-[15px] leading-[24px];
+    @apply flex min-h-screen flex-col bg-surface text-ink font-body text-[15px] leading-[24px];
   }
   h1, h2, h3, h4 {
     @apply font-display;
   }
+}
+
+/* Sticky footer: every page renders <Header /><main>...</main><Footer />
+   as direct children of <body> (React fragments don't add a wrapper), so
+   body is the flex column and main is the piece that grows to push the
+   footer to the bottom on pages with little content (e.g. /produk with
+   no products yet). Header/Footer keep their natural height. */
+body > main {
+  flex: 1 0 auto;
 }
 
 /* Used by CategoryProgressBar: the segment row scrolls via its own arrow
@@ -23,6 +32,44 @@
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Used by HowItWorksSection on the homepage: each step card fades/slides in
+   on load, staggered via inline animation-delay, and the arrow connectors
+   between steps pulse gently to suggest motion along the flow without a JS
+   animation library. prefers-reduced-motion turns both off. */
+@keyframes how-it-works-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes how-it-works-arrow {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(3px);
+  }
+}
+.how-it-works-step {
+  animation: how-it-works-in 0.5s ease-out both;
+}
+.how-it-works-arrow {
+  animation: how-it-works-arrow 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .how-it-works-step,
+  .how-it-works-arrow {
+    animation: none;
+  }
 }
 
 /* Print styles used by /checklist/cetak, the PDF export view.

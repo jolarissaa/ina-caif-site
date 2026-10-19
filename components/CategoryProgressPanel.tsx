@@ -28,7 +28,7 @@ export default function CategoryProgressPanel({ categories, visibleItems, status
 
   return (
     <div className="no-print hidden lg:block">
-      <div className="lg:sticky lg:top-8 lg:w-[260px]">
+      <div data-tutorial="category-progress-panel" className="lg:sticky lg:top-8 lg:w-[260px]">
         <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
           Progres per tahap
         </p>

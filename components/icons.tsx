@@ -95,6 +95,79 @@ export function StampIcon({ className = "h-5 w-5" }: IconProps) {
   );
 }
 
+// Homepage "Cara kerja INA-CAIF" flow icons — one per step. Kept in the
+// same plain stroke-only style as the icons above rather than filled
+// illustrations, so the strip reads as one consistent set.
+export function TargetIcon({ className = "h-5 w-5" }: IconProps) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      className={className}
+    >
+      <circle cx="10" cy="10" r="7" />
+      <circle cx="10" cy="10" r="3.75" />
+      <circle cx="10" cy="10" r="0.75" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function CompassIcon({ className = "h-5 w-5" }: IconProps) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      className={className}
+    >
+      <circle cx="10" cy="10" r="7.25" />
+      <path d="M12.6 7.4 11 11l-3.6 1.6L9 9l3.6-1.6Z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function ListStepsIcon({ className = "h-5 w-5" }: IconProps) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      className={className}
+    >
+      <circle cx="4" cy="5" r="1.1" fill="currentColor" stroke="none" />
+      <circle cx="4" cy="10" r="1.1" fill="currentColor" stroke="none" />
+      <circle cx="4" cy="15" r="1.1" fill="currentColor" stroke="none" />
+      <path d="M7.5 5h9M7.5 10h9M7.5 15h9" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function GearIcon({ className = "h-5 w-5" }: IconProps) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      className={className}
+    >
+      <circle cx="10" cy="10" r="2.75" />
+      <path
+        d="M10 3v1.6M10 15.4V17M17 10h-1.6M4.6 10H3M14.8 5.2l-1.1 1.1M6.3 13.7l-1.1 1.1M14.8 14.8l-1.1-1.1M6.3 6.3 5.2 5.2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 // "komite etik" path on the same screen — a small group, standing in for a
 // review committee (RS pendidikan / KEPKN) rather than a single regulator.
 export function EthicsIcon({ className = "h-5 w-5" }: IconProps) {
