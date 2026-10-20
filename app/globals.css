@@ -80,10 +80,10 @@ body > main {
 @keyframes tutorial-highlight-box {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(217, 83, 27, 0.55);
+    box-shadow: 0 0 0 0 rgba(179, 38, 30, 0.55);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(217, 83, 27, 0);
+    box-shadow: 0 0 0 6px rgba(179, 38, 30, 0);
   }
 }
 @keyframes tutorial-highlight-arrow {

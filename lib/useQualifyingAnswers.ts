@@ -170,3 +170,29 @@ export function useQualifyingAnswers(productId: string = "default") {
 
   return { answers, setAnswer, submit, markCompleted, reopen, resetAll, hydrated };
 }
+
+// Plain (non-hook) helper for pre-seeding a NEW product's purpose before
+// its /checklist questionnaire is ever shown — used by /produk when the
+// visitor arrived via one of the homepage's two entry cards ("Izin Edar"
+// or "Komite Etik") rather than through the generic "Compliance Checker"
+// link. Writes directly to the same storage key useQualifyingAnswers
+// itself reads, so by the time QualifyingQuestionnaire mounts for this
+// product, initialAnswers.purpose is already set and PurposeStep is
+// skipped entirely (see its `started` check) — the visitor never has to
+// answer "izin edar atau etik" a second time. completed stays false so the
+// classification/profile questions still show normally.
+export function presetProductPurpose(productId: string, purpose: "izin-edar" | "etik"): void {
+  try {
+    const key = productScopedKey(STORAGE_KEY, productId);
+    const raw = window.localStorage.getItem(key);
+    const current: QualifyingAnswers = raw
+      ? { ...DEFAULT_ANSWERS, ...JSON.parse(raw) }
+      : DEFAULT_ANSWERS;
+    const next: QualifyingAnswers = { ...current, purpose, completed: false };
+    window.localStorage.setItem(key, JSON.stringify(next));
+  } catch {
+    // Ignore inaccessible storage — the questionnaire just falls back to
+    // asking the purpose question normally.
+  }
+}
+

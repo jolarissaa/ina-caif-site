@@ -301,8 +301,16 @@ export default function QualifyingQuestionnaire({
   // revisiting via "Ubah jawaban profil produk") — the picker is a one-time
   // choice, not something a returning visitor should have to click through
   // again to see their own in-progress answers.
+  // Also treated as "started" when purpose is already pre-set (e.g. the
+  // visitor arrived via one of the homepage's "Izin Edar"/"Komite Etik"
+  // entry cards, which call presetProductPurpose() before /checklist ever
+  // renders this questionnaire) — PurposeStep is a one-time choice, and if
+  // it's already been made for them, asking it again here would be the
+  // exact double-ask Jo flagged.
   const [started, setStarted] = useState<boolean>(
-    initialAnswers.controlsDeviceFunction !== null || initialAnswers.usesAi !== null
+    initialAnswers.controlsDeviceFunction !== null ||
+      initialAnswers.usesAi !== null ||
+      initialAnswers.purpose !== null
   );
   const [purpose, setPurpose] = useState<"izin-edar" | "etik" | null>(initialAnswers.purpose);
 

@@ -1,3 +1,5 @@
+import { KEMENKES_SUBMISSION_GUIDE_URL } from "./checklistData";
+
 // The guided "Mode Tutorial" walkthrough, redesigned per Jo to live on
 // /checklist instead of the homepage — it now walks through an actual
 // product's checklist (progress panel, a sample item's controls, an
@@ -23,8 +25,8 @@ export type TutorialStep = {
   path: string;
   // CSS selector for the element to spotlight, or null for a step with no
   // target — rendered as a centered intro card instead of a spotlight ring
-  // (used only by "form-explainer" below, which has nothing on the page to
-  // point at yet).
+  // (used by "oss-explainer", "form-explainer", and "template-preview"
+  // below, none of which have anything on the page yet to point at).
   selector: string | null;
   title: string;
   // May contain the token {KLASIFIKASI} — replaced at render time with the
@@ -32,20 +34,69 @@ export type TutorialStep = {
   // generic fallback otherwise. See TutorialOverlay.
   body: string;
   // "click" steps ask the visitor to click the spotlighted element itself
-  // to continue (the overlay never intercepts that click — it just detects
-  // it and advances). Every other step shows a "Lanjut" button instead.
+  // to continue. The overlay never intercepts that click — it just detects
+  // it and advances — but it ALSO renders a guaranteed "Buka Sekarang"
+  // button that programmatically clicks the real target and advances, so
+  // the step never gets stuck on a pixel-perfect click landing exactly
+  // on the live-measured target (see TutorialOverlay's handleForceAdvance).
+  // Every other step shows a plain "Lanjut" button instead.
   advance: "click" | "button";
   // Where the instruction card sits relative to the spotlighted element.
+  // Unused (centered) for selector: null steps.
   placement: "bottom" | "top";
+  // Illustration for a selector: null step — a real screenshot plus
+  // caption, shown above the body text. Optional highlightBox/
+  // highlightArrow draw a pulsing red ring + arrow over a specific area of
+  // the image (percentage-positioned so they track the image at any
+  // display width) — used only by "form-explainer" to point at the Form
+  // A–E tab row; "oss-explainer" and "template-preview" just show a plain
+  // screenshot with no overlay.
+  image?: {
+    src: string;
+    alt: string;
+    caption: string;
+    highlightBox?: { left: string; top: string; width: string; height: string };
+    highlightArrow?: { left: string; top: string };
+  };
+  // Optional "read more" link shown under the body text of a selector:
+  // null step.
+  externalLink?: { url: string; label: string };
 };
 
 export const TUTORIAL_STEPS: TutorialStep[] = [
   {
+    id: "oss-explainer",
+    path: "/checklist",
+    selector: null,
+    title: "Sebelum mulai: alur OSS RBA dan Regalkes",
+    body: "Sejak Februari 2022, pengajuan izin edar alat kesehatan dimulai dari OSS RBA (oss.go.id) lebih dulu — lewat akun OSS milik perusahaan Anda — baru kemudian diteruskan ke sistem Regalkes Kemenkes untuk Form A–E-nya. Checklist di INA-CAIF ini membantu Anda menyiapkan dokumen untuk tahap Regalkes; tahap OSS RBA sendiri tetap perlu dilakukan terpisah, sebelum atau sambil jalan dengan checklist ini.",
+    image: {
+      src: "/images/oss-rba-flow.png",
+      alt: "Alur perizinan: Pelaku Usaha mengajukan lewat OSS, diteruskan ke Regalkes, lalu disetujui atau ditolak",
+      caption: "Alur resmi: OSS RBA lebih dulu, lalu diteruskan ke Regalkes Kemenkes untuk Form A–E.",
+    },
+    externalLink: { url: "/docs/tata-cara-oss-rba.pdf", label: "Lihat alurnya lewat OSS RBA →" },
+    advance: "button",
+    placement: "bottom",
+  },
+  {
     id: "form-explainer",
     path: "/checklist",
     selector: null,
-    title: "Sebelum mulai: kenalan dengan Form A–E Regalkes",
-    body: "Saat benar-benar mengajukan izin edar, Anda akan mengisi formulir resmi di e-Regalkes Kemenkes: Form A sampai E, masing-masing diisi online dan dilengkapi dengan berkas yang diunggah lewat tombol \"Pilih File\". Sebagai pengaju {KLASIFIKASI}, Anda akan diminta memberi informasi tentang AI yang juga perlu masuk ke dokumen-dokumen itu. Checklist di halaman ini memakai label \"Form A/B/C/D/E Regalkes\" yang sama persis — menunjukkan dokumen checklist ini nanti dipakai di formulir resmi yang mana.",
+    title: "Lanjut: kenalan dengan Form A–E Regalkes",
+    body: "Setelah tahap OSS, Anda akan mengisi formulir resmi di e-Regalkes Kemenkes: Form A sampai E, masing-masing diisi online dan dilengkapi dengan berkas yang diunggah lewat tombol \"Pilih File\". Sebagai pengaju {KLASIFIKASI}, Anda akan diminta memberi informasi tentang AI yang juga perlu masuk ke dokumen-dokumen itu. Checklist di halaman ini memakai label \"Form A/B/C/D/E Regalkes\" yang sama persis — menunjukkan dokumen checklist ini nanti dipakai di formulir resmi yang mana.",
+    image: {
+      src: "/images/form-a-e-screenshot.png",
+      alt: "Tangkapan layar e-Regalkes menunjukkan tab Form A, B, C, D, E",
+      caption:
+        "Tangkapan layar asli dari pedoman Kemenkes — tab Form A–E inilah yang dirujuk badge \"Form A/B/C/D/E Regalkes\" di checklist ini.",
+      highlightBox: { left: "12%", top: "56.5%", width: "29%", height: "10%" },
+      highlightArrow: { left: "26.5%", top: "41%" },
+    },
+    externalLink: {
+      url: KEMENKES_SUBMISSION_GUIDE_URL,
+      label: "Lihat contoh tangkapan layar asli di pedoman Kemenkes →",
+    },
     advance: "button",
     placement: "bottom",
   },
@@ -118,6 +169,21 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
     selector: '[data-tutorial="item-form-badge"]',
     title: "\"Form A\" di sini bukan satu file yang sama",
     body: "Beberapa butir checklist lain juga berlabel \"Form A Regalkes\" — artinya semua butir itu nanti bermuara ke formulir resmi yang sama di e-Regalkes, bukan berarti template dokumennya identik. Tombol \"Simpan Template\" di tiap butir tetap mengarah ke file yang berbeda-beda, sesuai isinya masing-masing.",
+    advance: "button",
+    placement: "bottom",
+  },
+  {
+    id: "template-preview",
+    path: "/checklist",
+    selector: null,
+    title: "Begini isinya kalau Anda klik \"Simpan Template\"",
+    body: "Tombol \"Simpan Template\" membuka dokumen contoh di Google Drive — biasanya langsung bisa dibuka dan diedit lewat Google Docs. Kotak kuning di dalamnya menandai bagian yang perlu Anda lengkapi sendiri (tangkapan layar, tabel, bukti teknis lain) — strukturnya sudah disiapkan, tinggal Anda isi. Buat salinannya ke Drive Anda sendiri dulu (File → Buat salinan) sebelum mulai mengisi, supaya versi aslinya tetap bersih untuk dipakai ulang nanti.",
+    image: {
+      src: "/images/template-preview.png",
+      alt: "Contoh template Google Docs dengan kotak kuning berisi instruksi yang perlu dilengkapi",
+      caption:
+        "Contoh isi salah satu template — kotak kuning bertanda ✎ menandai bagian yang perlu Anda lengkapi sendiri.",
+    },
     advance: "button",
     placement: "bottom",
   },

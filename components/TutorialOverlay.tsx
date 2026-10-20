@@ -7,7 +7,6 @@ import { TUTORIAL_STEPS } from "@/lib/tutorialSteps";
 import { useProducts } from "@/lib/useProducts";
 import { useQualifyingAnswers } from "@/lib/useQualifyingAnswers";
 import { deriveClassification } from "@/lib/classification";
-import { KEMENKES_SUBMISSION_GUIDE_URL } from "@/lib/checklistData";
 
 type Rect = { top: number; left: number; width: number; height: number };
 
@@ -29,7 +28,7 @@ function getRect(el: Element): Rect {
 // cutout, so the math stays simple for an arbitrary element size/position
 // and the strips can independently block clicks outside the spotlight while
 // the spotlighted element itself stays fully interactive (needed for the
-// one step that asks the visitor to click it).
+// steps that ask the visitor to click it).
 export default function TutorialOverlay() {
   const { active, stepIndex, next, prev, skipStep, stop, hydrated } = useTutorial();
   const pathname = usePathname();
@@ -38,11 +37,11 @@ export default function TutorialOverlay() {
   const [notFound, setNotFound] = useState(false);
   const navigatedRef = useRef<string | null>(null);
 
-  // Used to fill in the {KLASIFIKASI} token in the "form-explainer" intro
-  // step's body with the visitor's own product classification, when it's
-  // already known — read directly off localStorage via the same hooks the
-  // checklist page itself uses, since the overlay is mounted globally
-  // (app/layout.tsx) and has no product context passed down to it.
+  // Used to fill in the {KLASIFIKASI} token in a step's body with the
+  // visitor's own product classification, when it's already known — read
+  // directly off localStorage via the same hooks the checklist page itself
+  // uses, since the overlay is mounted globally (app/layout.tsx) and has no
+  // product context passed down to it.
   const { activeProductId } = useProducts();
   const { answers } = useQualifyingAnswers(activeProductId);
   const classification = deriveClassification(answers);
@@ -69,9 +68,8 @@ export default function TutorialOverlay() {
   }, [step, onRightPage, router]);
 
   // Locate (and keep up to date) the target element for the current step.
-  // Steps with no selector (selector: null — the intro step) render as a
-  // centered card with nothing to measure, so this skips the whole
-  // DOM-polling dance for them.
+  // Steps with no selector (selector: null) render as a centered card with
+  // nothing to measure, so this skips the whole DOM-polling dance for them.
   useEffect(() => {
     if (!step || !onRightPage || !hasSpotlight) {
       setRect(null);
@@ -151,6 +149,22 @@ export default function TutorialOverlay() {
     if (notFound) skipStep();
   }, [notFound, skipStep]);
 
+  // Guaranteed fallback for "click" steps — Jo hit a case where, even with
+  // the dimming strips made non-blocking (see the "strips" comment below),
+  // clicking the real, visible target still didn't land (likely a stale
+  // measurement, a scroll still settling, or simply a miss on a wrapped
+  // title). Rather than keep chasing pixel-perfect overlap between the
+  // overlay's frozen rect and the real element's live position, this just
+  // clicks the real target programmatically and advances — same end result
+  // as a successful manual click, but it can never miss.
+  function handleForceAdvance() {
+    if (step && step.selector) {
+      const el = document.querySelector(step.selector);
+      if (el instanceof HTMLElement) el.click();
+    }
+    next();
+  }
+
   if (!hydrated || !active || !step) return null;
 
   const stepNumber = stepIndex + 1;
@@ -160,16 +174,19 @@ export default function TutorialOverlay() {
     if (!onRightPage) {
       return <div className="pointer-events-none fixed inset-0 z-[90] bg-ink/10" aria-hidden />;
     }
-    // The "form-explainer" intro step: no element on the page to point at
-    // yet, so this renders as a plain centered card over a full dim,
-    // instead of the spotlight-ring layout below. Wider than the regular
-    // instruction card since it carries a short illustration (Form A–E +
-    // an upload step) rather than a one-paragraph tip.
+    // Intro-style steps (oss-explainer, form-explainer, template-preview):
+    // nothing on the page to point at yet, so these render as a plain
+    // centered card over a full dim, instead of the spotlight-ring layout
+    // below. Wider than the regular instruction card since it carries a
+    // short illustration rather than a one-paragraph tip. The image/caption/
+    // link are entirely data-driven from step.image / step.externalLink —
+    // see lib/tutorialSteps.ts — so each of these three steps can show its
+    // own screenshot without the component needing to know which one it is.
     return (
       <div className="fixed inset-0 z-[90]" role="dialog" aria-label="Mode Tutorial">
         <div className="pointer-events-auto fixed inset-0 bg-ink/50" onClick={stop} aria-hidden />
         <div className="pointer-events-none fixed inset-0 flex items-center justify-center p-4">
-          <div className="pointer-events-auto w-full max-w-xl rounded-lg border border-border-subtle bg-surface p-5 shadow-lg">
+          <div className="pointer-events-auto w-full max-w-xl overflow-y-auto rounded-lg border border-border-subtle bg-surface p-5 shadow-lg" style={{ maxHeight: "90vh" }}>
             <div className="flex items-start justify-between gap-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-brand">
                 Langkah {stepNumber} dari {totalSteps}
@@ -185,70 +202,73 @@ export default function TutorialOverlay() {
             </div>
             <h3 className="mt-1 font-display text-base font-semibold text-ink">{step.title}</h3>
 
-            {/* Real e-Regalkes screenshot (from Jo, cropped out of the
-                Kemenkes guide PDF — see KEMENKES_SUBMISSION_GUIDE_URL below
-                for the source), plain/unedited. The highlight box + arrow
-                pointing at the Form A–E tab row are drawn live on the page
-                instead of baked into the image — percentage-positioned over
-                it (box: left 12%/top 56.5%/29%×10%; arrow centered at left
-                26.5%, re-measured pixel-by-pixel against the tab row's
-                actual position in the 1616×420 source image: the row sits
-                at roughly x195–660, y238–278). The overlay divs live in
-                their OWN wrapper around just the <img> — not the card
-                around image+caption together — because percentage
-                positioning resolves against the nearest *positioned*
-                ancestor's own box: nesting them alongside the caption
-                paragraph made the box's "top" resolve against
-                (image height + caption height), pushing it down into the
-                Produk/Pabrik fields below the tabs instead of the tabs
-                themselves. Card widened from max-w-md to max-w-xl per Jo —
-                the screenshot was too small to read "Form A/B/C" clearly;
-                w-full still caps it to the viewport on narrow screens. */}
-            <div className="mt-3 overflow-hidden rounded-md border border-border-subtle bg-surface-alt">
-              <div className="relative">
-                <img
-                  src="/images/form-a-e-screenshot.png"
-                  alt="Tangkapan layar e-Regalkes menunjukkan tab Form A, B, C, D, E"
-                  className="block w-full"
-                />
-                <div
-                  aria-hidden
-                  className="tutorial-highlight-box pointer-events-none absolute rounded-md border-2 border-accent"
-                  style={{ left: "12%", top: "56.5%", width: "29%", height: "10%" }}
-                />
-                <div
-                  aria-hidden
-                  className="tutorial-highlight-arrow pointer-events-none absolute text-2xl leading-none text-accent"
-                  style={{ left: "26.5%", top: "41%", transform: "translateX(-50%)" }}
-                >
-                  ↓
+            {step.image ? (
+              // Overlay divs (when present — only form-explainer uses
+              // highlightBox/highlightArrow) live in their OWN wrapper
+              // around just the <img>, not the card around image+caption
+              // together — because percentage positioning resolves against
+              // the nearest *positioned* ancestor's own box: nesting them
+              // alongside the caption paragraph made "top" resolve against
+              // (image height + caption height) instead of the image alone.
+              <div className="mt-3 overflow-hidden rounded-md border border-border-subtle bg-surface-alt">
+                <div className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={step.image.src} alt={step.image.alt} className="block w-full" />
+                  {step.image.highlightBox ? (
+                    <div
+                      aria-hidden
+                      className="tutorial-highlight-box pointer-events-none absolute rounded-md border-2 border-error"
+                      style={step.image.highlightBox}
+                    />
+                  ) : null}
+                  {step.image.highlightArrow ? (
+                    <div
+                      aria-hidden
+                      className="tutorial-highlight-arrow pointer-events-none absolute text-2xl leading-none text-error"
+                      style={{ ...step.image.highlightArrow, transform: "translateX(-50%)" }}
+                    >
+                      ↓
+                    </div>
+                  ) : null}
                 </div>
+                <p className="px-3 py-2 text-[11px] leading-[16px] text-ink-muted">
+                  {step.image.caption}
+                </p>
               </div>
-              <p className="px-3 py-2 text-[11px] leading-[16px] text-ink-muted">
-                Tangkapan layar asli dari pedoman Kemenkes — tab Form A–E inilah yang dirujuk
-                badge "Form A/B/C/D/E Regalkes" di checklist ini.
-              </p>
-            </div>
+            ) : null}
 
             <p className="mt-3 text-sm leading-[20px] text-ink-muted">{stepBody}</p>
 
-            <a
-              href={KEMENKES_SUBMISSION_GUIDE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 inline-block text-xs font-medium text-brand hover:underline"
-            >
-              Lihat contoh tangkapan layar asli di pedoman Kemenkes →
-            </a>
+            {step.externalLink ? (
+              <a
+                href={step.externalLink.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-block text-xs font-medium text-brand hover:underline"
+              >
+                {step.externalLink.label}
+              </a>
+            ) : null}
 
             <div className="mt-4 flex items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={stop}
-                className="text-xs font-medium text-ink-muted hover:text-brand"
-              >
-                Lewati tutorial
-              </button>
+              <div className="flex items-center gap-3">
+                {stepIndex > 0 ? (
+                  <button
+                    type="button"
+                    onClick={prev}
+                    className="text-xs font-medium text-ink-muted hover:text-brand"
+                  >
+                    ← Kembali
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={stop}
+                  className="text-xs font-medium text-ink-muted hover:text-brand"
+                >
+                  Lewati tutorial
+                </button>
+              </div>
               <button
                 type="button"
                 onClick={next}
@@ -286,8 +306,10 @@ export default function TutorialOverlay() {
   // text do nothing while only the far edge of the row worked. The strips
   // now stay purely visual (pointer-events-none) for "click" steps: every
   // click reaches the real page normally, and the existing document
-  // click-listener below (not shown here) still detects whether it landed
-  // inside the spotlighted element and advances the tour if so.
+  // click-listener above still detects whether it landed inside the
+  // spotlighted element and advances the tour if so. The "Buka Sekarang"
+  // button below is the guaranteed path in case a real click still somehow
+  // doesn't land.
   const strips = step.advance === "click" ? "pointer-events-none" : "pointer-events-auto";
 
   return (
@@ -341,6 +363,12 @@ export default function TutorialOverlay() {
         <h3 className="mt-1 font-display text-sm font-semibold text-ink">{step.title}</h3>
         <p className="mt-1.5 text-sm leading-[20px] text-ink-muted">{stepBody}</p>
 
+        {step.advance === "click" ? (
+          <p className="mt-2.5 text-xs italic text-ink-muted">
+            Klik langsung elemen yang disorot di halaman, atau pakai tombol di bawah:
+          </p>
+        ) : null}
+
         <div className="mt-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             {stepIndex > 0 ? (
@@ -360,23 +388,13 @@ export default function TutorialOverlay() {
               Lewati tutorial
             </button>
           </div>
-          {step.advance === "button" ? (
-            <button
-              type="button"
-              onClick={next}
-              className="rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-on-brand hover:bg-brand-dark"
-            >
-              {stepNumber === totalSteps ? "Selesai" : "Lanjut"}
-            </button>
-          ) : (
-            // Not a button — it's a hint pointing at the spotlighted
-            // element itself (styled muted, not link-colored, so it
-            // doesn't look pressable; Jo tried clicking it expecting it to
-            // do something).
-            <span className="text-right text-xs font-medium italic text-ink-muted">
-              Klik langsung elemen yang disorot di halaman
-            </span>
-          )}
+          <button
+            type="button"
+            onClick={step.advance === "click" ? handleForceAdvance : next}
+            className="rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-on-brand hover:bg-brand-dark"
+          >
+            {step.advance === "click" ? "Buka Sekarang" : stepNumber === totalSteps ? "Selesai" : "Lanjut"}
+          </button>
         </div>
       </div>
     </div>

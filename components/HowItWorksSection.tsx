@@ -3,10 +3,13 @@ import { DocumentIcon } from "./icons";
 
 // Visual, icon-based walkthrough of INA-CAIF's user flow for the homepage
 // (Jo: "kasih tau, in a visual manner, pake icon, pake animation cara kerja
-// ina caif dan user flownya"). Six steps connected by arrows, each card
-// fading in on load (see .how-it-works-step / .how-it-works-arrow in
-// globals.css) so the section feels a bit more alive than a plain list,
-// without pulling in an animation library for six CSS keyframes.
+// ina caif dan user flownya"). Six steps in a responsive grid (3 columns on
+// desktop, 2 on tablet, 1 on mobile — always a complete grid, 6 being
+// divisible by both 2 and 3), each card fading in on load (see
+// .how-it-works-step in globals.css). Per Jo: the earlier flex-wrap +
+// connecting-arrow layout left the 6th step stranded alone on its own row
+// at common widths — a plain grid can't do that, so the numbered badge
+// replaces the arrows as the "this is a sequence" cue instead.
 const STEPS: { icon: React.ComponentType<{ className?: string }>; title: string; body: string }[] = [
   {
     icon: TargetIcon,
@@ -42,30 +45,25 @@ const STEPS: { icon: React.ComponentType<{ className?: string }>; title: string;
 
 export default function HowItWorksSection() {
   return (
-    <div className="flex flex-wrap items-stretch justify-center gap-x-2 gap-y-6">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {STEPS.map((step, i) => {
         const Icon = step.icon;
         return (
-          <div key={step.title} className="flex items-center">
-            <div
-              className="how-it-works-step w-[168px] rounded-lg border border-border-subtle bg-surface p-4"
-              style={{ animationDelay: `${i * 90}ms` }}
-            >
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand/10 text-brand">
+          <div
+            key={step.title}
+            className="how-it-works-step rounded-lg border border-border-subtle bg-surface p-4"
+            style={{ animationDelay: `${i * 90}ms` }}
+          >
+            <div className="flex items-center gap-2">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand">
                 <Icon className="h-4.5 w-4.5" />
               </div>
-              <p className="mt-3 text-sm font-semibold leading-[18px] text-ink">{step.title}</p>
-              <p className="mt-1.5 text-xs leading-[17px] text-ink-muted">{step.body}</p>
-            </div>
-            {i < STEPS.length - 1 ? (
-              <span
-                aria-hidden
-                className="how-it-works-arrow mx-1.5 hidden flex-shrink-0 text-lg text-brand/60 sm:inline-block"
-                style={{ animationDelay: `${i * 90}ms` }}
-              >
-                →
+              <span className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                Langkah {i + 1}
               </span>
-            ) : null}
+            </div>
+            <p className="mt-3 text-sm font-semibold leading-[18px] text-ink">{step.title}</p>
+            <p className="mt-1.5 text-xs leading-[17px] text-ink-muted">{step.body}</p>
           </div>
         );
       })}

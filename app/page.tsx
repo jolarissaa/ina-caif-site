@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FeatureCard from "@/components/FeatureCard";
@@ -20,7 +21,7 @@ export default function HomePage() {
             Indonesia Clinical AI Audit &amp; Governance Framework
           </p>
           <p className="mt-3 max-w-xl text-sm leading-[22px] text-ink-muted">
-            Menerjemahkan regulasi kesehatan jadi langkah teknis yang jelas, termasuk kesiapan
+            Menerjemahkan regulasi kesehatan jadi langkah teknis yang jelas, baik untuk kesiapan
             dokumen sebelum{" "}
             <a
               href="https://regalkes.kemkes.go.id"
@@ -29,32 +30,61 @@ export default function HomePage() {
               className="font-medium text-brand hover:underline"
             >
               mengajukan izin edar lewat Regalkes Kemenkes
-            </a>
-            .
+            </a>{" "}
+            maupun ringkasan untuk komite etik.
           </p>
         </section>
 
-        <section className="mx-auto max-w-content px-6 pb-16">
+        {/* Per Jo: the two entry points people actually choose between are
+            "izin edar" or "komite etik" — not "the checker" vs. "the
+            library". Both cards below lead into the exact same Compliance
+            Checker, just with the purpose already decided (carried via
+            ?purpose= to /produk — see presetProductPurpose in
+            lib/useQualifyingAnswers.ts), so the questionnaire never has to
+            ask "izin edar atau etik" a second time. Pustaka Regulasi moves
+            to its own flat banner below instead of sharing equal visual
+            weight as a third "feature" — it's a reference tool, not
+            another destination to choose between. */}
+        <section className="mx-auto max-w-content px-6 pb-6">
           <div className="grid items-stretch gap-6 sm:grid-cols-2">
             <FeatureCard
-              href="/produk"
-              title="Compliance Checker"
-              description="Susuri persyaratan izin edar, manajemen risiko, hingga etika AI sebagai butir-butir yang bisa ditandai, lengkap dengan sitasi ke regulasi aslinya. Lacak lebih dari satu produk AI sekaligus, masing-masing dengan checklist-nya sendiri."
-              linkLabel="Lihat produk saya"
+              href="/produk?purpose=izin-edar"
+              title="Izin Edar"
+              description="Lacak dokumen dan bukti yang perlu disiapkan sebelum mengajukan izin edar lewat Regalkes Kemenkes — dari OSS RBA sampai Form A–E, lengkap dengan sitasi ke regulasi aslinya."
+              linkLabel="Mulai Persiapan Izin Edar"
               imageSrc="/images/checklist-preview.png"
-              imageAlt="Pratinjau halaman Compliance Checker INA-CAIF"
+              imageAlt="Pratinjau Compliance Checker INA-CAIF untuk persiapan izin edar"
               accent="brand"
             />
             <FeatureCard
-              href="/regulasi"
-              title="Pustaka Regulasi"
-              description="Telusuri regulasi dan standar yang menjadi dasar checklist, termasuk teks lengkap KMK 951/2026 beserta sumber lain yang relevan."
-              linkLabel="Buka pustaka"
-              imageSrc="/images/pustaka-preview.png"
-              imageAlt="Pratinjau halaman Pustaka Regulasi INA-CAIF"
+              href="/produk?purpose=etik"
+              title="Komite Etik"
+              description="Untuk produk yang masih tahap penelitian atau uji coba di rumah sakit pendidikan. Siapkan ringkasan yang mudah dibaca tim etik, lengkap dengan tautan bukti dokumentasi Anda sendiri."
+              linkLabel="Mulai Persiapan untuk Komite Etik"
+              imageSrc="/images/checklist-preview.png"
+              imageAlt="Pratinjau Compliance Checker INA-CAIF untuk persiapan komite etik"
               accent="accent"
             />
           </div>
+        </section>
+
+        <section className="mx-auto max-w-content px-6 pb-16">
+          <Link
+            href="/regulasi"
+            className="group flex flex-col items-start justify-between gap-3 rounded-lg border border-border-subtle bg-surface-alt px-6 py-5 sm:flex-row sm:items-center sm:gap-6"
+          >
+            <div className="min-w-0">
+              <p className="font-display text-base font-semibold text-ink">Pustaka Regulasi</p>
+              <p className="mt-1 max-w-2xl text-sm leading-[21px] text-ink-muted">
+                Telusuri regulasi dan standar yang menjadi dasar checklist di atas, termasuk teks
+                lengkap KMK 951/2026 beserta sumber lain yang relevan.
+              </p>
+            </div>
+            <span className="inline-flex flex-shrink-0 items-center gap-1.5 text-sm font-semibold text-brand group-hover:opacity-80">
+              Buka pustaka
+              <span aria-hidden>→</span>
+            </span>
+          </Link>
         </section>
 
         <section className="border-y border-border-subtle bg-surface-alt">
@@ -65,7 +95,7 @@ export default function HomePage() {
             <h2 className="mt-1 font-display text-xl font-semibold text-ink">
               Dari tujuan Anda sampai siap diajukan
             </h2>
-            <div className="mt-8 overflow-x-auto pb-2">
+            <div className="mt-8">
               <HowItWorksSection />
             </div>
           </div>
@@ -81,8 +111,9 @@ export default function HomePage() {
           <p className="mt-2 max-w-2xl text-sm leading-[22px] text-ink-muted">
             Checklist yang sama bisa dipakai untuk dua hal: menyiapkan dokumen izin edar, atau
             menyiapkan ringkasan untuk komite etik kalau produk Anda masih tahap penelitian atau
-            uji coba. Saat mulai checklist, Anda tinggal pilih salah satu, sisanya menyesuaikan
-            dengan sendirinya.
+            uji coba. Pilih salah satu lewat tombol &quot;Izin Edar&quot; atau &quot;Komite
+            Etik&quot; di bagian atas halaman ini untuk mulai — sisanya menyesuaikan dengan
+            sendirinya.
           </p>
         </section>
 
@@ -152,14 +183,15 @@ export default function HomePage() {
                 href="https://its.id/m/INACAIF"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 inline-flex rounded-md bg-accent px-5 py-3 text-sm font-semibold text-on-accent hover:opacity-90"
+                className="mt-5 inline-flex items-center gap-1.5 rounded-md bg-accent px-5 py-3 text-sm font-semibold text-on-accent hover:opacity-90"
               >
                 Isi Survei
+                <span aria-hidden>→</span>
               </a>
             </div>
 
             <div className="rounded-lg border border-border-subtle bg-surface p-8">
-              <h2 className="font-display text-base font-semibold text-ink">
+              <h2 className="font-display text-xl font-semibold text-ink">
                 Masukan untuk situs ini sendiri
               </h2>
               <p className="mt-3 text-sm leading-[22px] text-ink-muted">
@@ -171,7 +203,7 @@ export default function HomePage() {
                 href="https://forms.gle/c5r2ZZi9A9D2sBfLA"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline"
+                className="mt-5 inline-flex items-center gap-1.5 rounded-md bg-brand px-5 py-3 text-sm font-semibold text-on-brand hover:opacity-90"
               >
                 Beri Masukan untuk Situs Ini
                 <span aria-hidden>→</span>

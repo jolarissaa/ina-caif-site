@@ -22,6 +22,7 @@ import {
 import { useChecklistState } from "@/lib/useChecklistState";
 import { useQualifyingAnswers } from "@/lib/useQualifyingAnswers";
 import { useProducts } from "@/lib/useProducts";
+import { useTutorial } from "@/lib/useTutorial";
 import { deriveClassification, deriveEvidenceTier } from "@/lib/classification";
 
 export default function ChecklistPage() {
@@ -34,11 +35,13 @@ export default function ChecklistPage() {
   const { statusMap, setStatus, resetAll, hydrated } = useChecklistState(activeProductId);
   const {
     answers,
+    setAnswer,
     submit,
     markCompleted,
     reopen,
     hydrated: qualifyingHydrated,
   } = useQualifyingAnswers(activeProductId);
+  const { start: startTutorial } = useTutorial();
 
   // Computed once per render from the questionnaire's answers — see
   // lib/classification.ts. null while the classification gates haven't
@@ -168,6 +171,52 @@ export default function ChecklistPage() {
               />
             ) : null}
 
+            {/* Clearly visible without scrolling — per Jo: even after the
+                tutorial is done and the person is deep into filling the
+                checklist, the real-world links and a way back into the
+                tutorial should stay reachable from right here, not only
+                buried in the "Langkah selanjutnya" card at the very
+                bottom of the page. */}
+            <div className="no-print mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md border border-border-subtle bg-surface-alt px-4 py-2.5 text-xs">
+              <span className="font-semibold uppercase tracking-wide text-ink-muted">
+                Akses cepat
+              </span>
+              <a
+                href="https://oss.go.id"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-brand hover:underline"
+              >
+                OSS RBA →
+              </a>
+              <a
+                href={KEMENKES_SUBMISSION_GUIDE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-brand hover:underline"
+              >
+                Panduan Regalkes →
+              </a>
+              <a
+                href="https://regalkes.kemkes.go.id"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-brand hover:underline"
+              >
+                Regalkes Kemenkes →
+              </a>
+              <span className="ml-auto text-ink-muted">
+                Bingung?{" "}
+                <button
+                  type="button"
+                  onClick={() => startTutorial()}
+                  className="font-medium text-brand hover:underline"
+                >
+                  Ulangi Mode Tutorial
+                </button>
+              </span>
+            </div>
+
             <div className="lg:hidden">
               <div className="mt-6 flex items-center justify-between gap-4">
                 <div className="min-w-0 flex-1">
@@ -180,11 +229,32 @@ export default function ChecklistPage() {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end">
+            <div className="no-print mt-6 flex flex-wrap items-center justify-between gap-3">
+              {answers.purpose ? (
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <span className="font-semibold uppercase tracking-wide text-ink-muted">
+                    Tujuan:
+                  </span>
+                  <span className="rounded-pill bg-brand/10 px-2.5 py-1 font-medium text-brand">
+                    {answers.purpose === "etik" ? "Komite Etik" : "Izin Edar"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setAnswer("purpose", answers.purpose === "etik" ? "izin-edar" : "etik")
+                    }
+                    className="text-ink-muted underline-offset-2 hover:text-brand hover:underline"
+                  >
+                    Ganti ke {answers.purpose === "etik" ? "Izin Edar" : "Komite Etik"}
+                  </button>
+                </div>
+              ) : (
+                <span />
+              )}
               <button
                 type="button"
                 onClick={reopen}
-                className="no-print flex-shrink-0 text-xs font-medium text-ink-muted underline-offset-2 hover:text-brand hover:underline"
+                className="flex-shrink-0 text-xs font-medium text-ink-muted underline-offset-2 hover:text-brand hover:underline"
               >
                 Ubah jawaban profil produk
               </button>

@@ -8,6 +8,7 @@ import SourceBadge from "./SourceBadge";
 import FormBadge from "./FormBadge";
 import { DocumentIcon, AlertIcon, BookmarkDownloadIcon } from "./icons";
 import { useBreakdownState } from "@/lib/useBreakdownState";
+import { useEvidenceLinks } from "@/lib/useEvidenceLinks";
 
 type Props = {
   item: ChecklistItemType;
@@ -66,6 +67,7 @@ export default function ChecklistItem({
 }: Props) {
   const [open, setOpen] = useState(false);
   const { isChecked, toggleStep } = useBreakdownState(productId);
+  const { getLink, setLink } = useEvidenceLinks(productId);
   const outputBorder = item.outputKind ? OUTPUT_KIND_BORDER[item.outputKind] : null;
   const outputIcon = item.outputKind ? OUTPUT_KIND_ICON[item.outputKind] : null;
 
@@ -318,6 +320,25 @@ export default function ChecklistItem({
                   <span className="text-[11px] text-ink-muted">
                     Struktur ini merupakan saran penyusunan dan bukan formulir resmi Kemenkes
                   </span>
+                </div>
+              ) : null}
+
+              {item.ethicsRelevant ? (
+                <div className="rounded-md border border-border-subtle bg-surface-alt p-2.5">
+                  <label className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
+                    Tautan bukti/dokumen Anda (opsional)
+                  </label>
+                  <input
+                    type="url"
+                    value={getLink(item.id)}
+                    onChange={(e) => setLink(item.id, e.target.value)}
+                    placeholder="Tempel link Google Docs/Drive dokumen yang sudah Anda isi"
+                    className="mt-1 w-full rounded-md border border-border-subtle bg-surface px-2.5 py-1.5 text-xs text-ink"
+                  />
+                  <p className="mt-1 text-[11px] text-ink-muted">
+                    Ikut tercantum saat Anda mengekspor ringkasan untuk komite etik — satu
+                    dokumen siap kirim beserta semua tautan bukti Anda.
+                  </p>
                 </div>
               ) : null}
 

@@ -1,22 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useProducts } from "@/lib/useProducts";
 import { getProductProgress } from "@/lib/productProgress";
+import { presetProductPurpose } from "@/lib/useQualifyingAnswers";
+import { useTutorial } from "@/lib/useTutorial";
 
 type Progress = { done: number; total: number };
 
-// The landing point for "Produk Saya" in the header nav — a list of every
-// AI product being tracked in this browser, each with its own Compliance
-// Checker progress. No login: products are just named slices of
-// localStorage (see lib/useProducts.ts). Opening one sets it as the active
-// product and sends the visitor to /checklist, which reads whichever
-// product is active.
+// The landing point for "Produk Saya" in the header nav, and now also the
+// landing point right after the homepage's "Izin Edar" / "Komite Etik"
+// entry cards (see app/page.tsx) — a list of every AI product being
+// tracked in this browser, each with its own Compliance Checker progress.
+// No login: products are just named slices of localStorage (see
+// lib/useProducts.ts). Opening one sets it as the active product and sends
+// the visitor to /checklist, which reads whichever product is active.
+//
+// Wrapped in <Suspense> because useSearchParams() requires it under the
+// App Router (same pattern as app/checklist/cetak/page.tsx).
 export default function ProdukPage() {
+  return (
+    <Suspense fallback={null}>
+      <ProdukPageContent />
+    </Suspense>
+  );
+}
+
+function ProdukPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  // Set when the visitor arrived via one of the homepage's two entry
+  // cards — carries straight through to the next product they add, so
+  // /checklist's questionnaire never asks "izin edar atau etik" a second
+  // time. Not applied to EXISTING products (opening one via "Buka" keeps
+  // whatever purpose it already has) — only to a product created in this
+  // same visit, which is what "purposeParam" below is for.
+  const purposeParam = searchParams.get("purpose");
+  const presetPurpose: "izin-edar" | "etik" | null =
+    purposeParam === "izin-edar" || purposeParam === "etik" ? purposeParam : null;
+
   const {
     products,
     setActiveProductId,
@@ -25,6 +50,7 @@ export default function ProdukPage() {
     removeProduct,
     hydrated,
   } = useProducts();
+  const { start: startTutorial } = useTutorial();
   const [progress, setProgress] = useState<Record<string, Progress>>({});
   const [newName, setNewName] = useState("");
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -44,12 +70,20 @@ export default function ProdukPage() {
     router.push("/checklist");
   }
 
+  // Every new product automatically starts the guided tour — per Jo: "tiap
+  // ada produk baru, itu automatically pasti lgsg ke tutorial". Visiting
+  // an EXISTING product via "Buka" above does not re-trigger it; this is
+  // only for the moment a product is actually created.
   function handleAdd() {
     if (!newName.trim()) return;
     const id = addProduct(newName);
+    if (presetPurpose) {
+      presetProductPurpose(id, presetPurpose);
+    }
     setNewName("");
     setActiveProductId(id);
     router.push("/checklist");
+    startTutorial();
   }
 
   return (
@@ -64,6 +98,13 @@ export default function ProdukPage() {
             sedang membangun atau mengurus izin edar lebih dari satu sistem AI kesehatan
             sekaligus. Tidak perlu login; semua tersimpan di browser ini.
           </p>
+          {presetPurpose ? (
+            <p className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-brand/30 bg-brand/5 px-3 py-1.5 text-xs font-medium text-brand">
+              Produk baru yang Anda tambahkan akan langsung diarahkan untuk{" "}
+              {presetPurpose === "etik" ? "komite etik" : "izin edar"} — tidak perlu memilih lagi
+              di langkah berikutnya.
+            </p>
+          ) : null}
         </div>
 
         {/* Kept at the top, above the list, on purpose — per Jo: with the

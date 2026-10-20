@@ -15,6 +15,7 @@ import { useChecklistState } from "@/lib/useChecklistState";
 import { useEthicsContext } from "@/lib/useEthicsContext";
 import { useQualifyingAnswers } from "@/lib/useQualifyingAnswers";
 import { useBreakdownState } from "@/lib/useBreakdownState";
+import { useEvidenceLinks } from "@/lib/useEvidenceLinks";
 import { useProducts } from "@/lib/useProducts";
 import StatusPill from "@/components/StatusPill";
 import {
@@ -51,6 +52,7 @@ function ChecklistCetakContent() {
   const { context } = useEthicsContext(activeProductId);
   const { answers } = useQualifyingAnswers(activeProductId);
   const { isChecked } = useBreakdownState(activeProductId);
+  const { getLink } = useEvidenceLinks(activeProductId);
   const searchParams = useSearchParams();
   const includeEthicsContext = searchParams.get("etik") === "1";
 
@@ -180,6 +182,44 @@ function ChecklistCetakContent() {
               ) : null}
               <ul className="mt-3 space-y-3">
                 {itemsInCategory.map((item) => {
+                  // Ethics export: a compact row per item — title, a short
+                  // one-line explanation for orientation, status, and
+                  // either the developer's own evidence link or a plain
+                  // placeholder. Deliberately leaves out the breakdown/
+                  // checkbox detail that the regular export below prints —
+                  // per Jo, repeating every sub-question and checkbox here
+                  // just confuses an ethics reviewer who mainly needs to
+                  // know what's done and where the proof is, not retrace
+                  // the developer's own working checklist.
+                  if (includeEthicsContext) {
+                    const link = getLink(item.id);
+                    return (
+                      <li key={item.id} className="border-t border-border-subtle pt-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="text-sm leading-[22px] text-ink">{item.title}</p>
+                          <StatusPill status={statusMap[item.id] ?? item.defaultStatus} />
+                        </div>
+                        <p className="mt-1 text-sm leading-[22px] text-ink-muted">
+                          {item.explanation}
+                        </p>
+                        <p className="mt-1.5 text-xs font-medium">
+                          {link ? (
+                            <a
+                              href={link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-brand hover:underline"
+                            >
+                              Lihat dokumen/bukti →
+                            </a>
+                          ) : (
+                            <span className="italic text-ink-muted">Belum ada tautan dokumen</span>
+                          )}
+                        </p>
+                      </li>
+                    );
+                  }
+
                   const actionableCount =
                     item.breakdown?.filter((step) => step.actionable !== false).length ?? 0;
                   const doneCount =
