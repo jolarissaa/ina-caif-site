@@ -31,7 +31,7 @@ function getRect(el: Element): Rect {
 // the spotlighted element itself stays fully interactive (needed for the
 // one step that asks the visitor to click it).
 export default function TutorialOverlay() {
-  const { active, stepIndex, next, skipStep, stop, hydrated } = useTutorial();
+  const { active, stepIndex, next, prev, skipStep, stop, hydrated } = useTutorial();
   const pathname = usePathname();
   const router = useRouter();
   const [rect, setRect] = useState<Rect | null>(null);
@@ -169,7 +169,7 @@ export default function TutorialOverlay() {
       <div className="fixed inset-0 z-[90]" role="dialog" aria-label="Mode Tutorial">
         <div className="pointer-events-auto fixed inset-0 bg-ink/50" onClick={stop} aria-hidden />
         <div className="pointer-events-none fixed inset-0 flex items-center justify-center p-4">
-          <div className="pointer-events-auto w-full max-w-md rounded-lg border border-border-subtle bg-surface p-5 shadow-lg">
+          <div className="pointer-events-auto w-full max-w-xl rounded-lg border border-border-subtle bg-surface p-5 shadow-lg">
             <div className="flex items-start justify-between gap-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-brand">
                 Langkah {stepNumber} dari {totalSteps}
@@ -190,30 +190,39 @@ export default function TutorialOverlay() {
                 for the source), plain/unedited. The highlight box + arrow
                 pointing at the Form A–E tab row are drawn live on the page
                 instead of baked into the image — percentage-positioned over
-                it (box: left 11.14%/top 56.19%/30.01%×13.33%; arrow centered
-                at left 38.24%, matching the tab row's pixel position in the
-                1616×420 source image) so they track the screenshot at any
-                display width, and pulse/bounce via the
-                .tutorial-highlight-box / .tutorial-highlight-arrow
-                animations in globals.css (same animated-pointer pattern as
-                HowItWorksSection's arrows). */}
-            <div className="relative mt-3 overflow-hidden rounded-md border border-border-subtle bg-surface-alt">
-              <img
-                src="/images/form-a-e-screenshot.png"
-                alt="Tangkapan layar e-Regalkes menunjukkan tab Form A, B, C, D, E"
-                className="block w-full"
-              />
-              <div
-                aria-hidden
-                className="tutorial-highlight-box pointer-events-none absolute rounded-md border-2 border-accent"
-                style={{ left: "11.14%", top: "56.19%", width: "30.01%", height: "13.33%" }}
-              />
-              <div
-                aria-hidden
-                className="tutorial-highlight-arrow pointer-events-none absolute text-2xl leading-none text-accent"
-                style={{ left: "38.24%", top: "42%", transform: "translateX(-50%)" }}
-              >
-                ↓
+                it (box: left 12%/top 56.5%/29%×10%; arrow centered at left
+                26.5%, re-measured pixel-by-pixel against the tab row's
+                actual position in the 1616×420 source image: the row sits
+                at roughly x195–660, y238–278). The overlay divs live in
+                their OWN wrapper around just the <img> — not the card
+                around image+caption together — because percentage
+                positioning resolves against the nearest *positioned*
+                ancestor's own box: nesting them alongside the caption
+                paragraph made the box's "top" resolve against
+                (image height + caption height), pushing it down into the
+                Produk/Pabrik fields below the tabs instead of the tabs
+                themselves. Card widened from max-w-md to max-w-xl per Jo —
+                the screenshot was too small to read "Form A/B/C" clearly;
+                w-full still caps it to the viewport on narrow screens. */}
+            <div className="mt-3 overflow-hidden rounded-md border border-border-subtle bg-surface-alt">
+              <div className="relative">
+                <img
+                  src="/images/form-a-e-screenshot.png"
+                  alt="Tangkapan layar e-Regalkes menunjukkan tab Form A, B, C, D, E"
+                  className="block w-full"
+                />
+                <div
+                  aria-hidden
+                  className="tutorial-highlight-box pointer-events-none absolute rounded-md border-2 border-accent"
+                  style={{ left: "12%", top: "56.5%", width: "29%", height: "10%" }}
+                />
+                <div
+                  aria-hidden
+                  className="tutorial-highlight-arrow pointer-events-none absolute text-2xl leading-none text-accent"
+                  style={{ left: "26.5%", top: "41%", transform: "translateX(-50%)" }}
+                >
+                  ↓
+                </div>
               </div>
               <p className="px-3 py-2 text-[11px] leading-[16px] text-ink-muted">
                 Tangkapan layar asli dari pedoman Kemenkes — tab Form A–E inilah yang dirujuk
@@ -268,23 +277,36 @@ export default function TutorialOverlay() {
 
   const cardTop = step.placement === "top" ? Math.max(top - 170, 12) : top + height + 12;
 
+  // "click" steps used to block every click outside the spotlight's exact
+  // measured rect, intending to force the visitor to click the target — but
+  // any small mismatch between that frozen rect and the real element (e.g.
+  // the smooth-scroll settling a few px off, or a title that wraps mid-
+  // measurement) left part of the real, visible target covered by an
+  // opaque-but-click-eating strip, which is what made clicking the title
+  // text do nothing while only the far edge of the row worked. The strips
+  // now stay purely visual (pointer-events-none) for "click" steps: every
+  // click reaches the real page normally, and the existing document
+  // click-listener below (not shown here) still detects whether it landed
+  // inside the spotlighted element and advances the tour if so.
+  const strips = step.advance === "click" ? "pointer-events-none" : "pointer-events-auto";
+
   return (
     <div className="fixed inset-0 z-[90]" role="dialog" aria-label="Mode Tutorial">
       {/* Four dimming strips around the spotlight — thin grey, not solid black. */}
       <div
-        className="pointer-events-auto fixed left-0 right-0 top-0 bg-ink/35"
+        className={`fixed left-0 right-0 top-0 bg-ink/35 ${strips}`}
         style={{ height: top }}
       />
       <div
-        className="pointer-events-auto fixed left-0 right-0 bottom-0 bg-ink/35"
+        className={`fixed left-0 right-0 bottom-0 bg-ink/35 ${strips}`}
         style={{ top: top + height }}
       />
       <div
-        className="pointer-events-auto fixed bottom-0 left-0 bg-ink/35"
+        className={`fixed bottom-0 left-0 bg-ink/35 ${strips}`}
         style={{ top, height, width: left }}
       />
       <div
-        className="pointer-events-auto fixed bottom-0 right-0 bg-ink/35"
+        className={`fixed bottom-0 right-0 bg-ink/35 ${strips}`}
         style={{ top, height, left: left + width }}
       />
 
@@ -320,13 +342,24 @@ export default function TutorialOverlay() {
         <p className="mt-1.5 text-sm leading-[20px] text-ink-muted">{stepBody}</p>
 
         <div className="mt-3 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={stop}
-            className="text-xs font-medium text-ink-muted hover:text-brand"
-          >
-            Lewati tutorial
-          </button>
+          <div className="flex items-center gap-3">
+            {stepIndex > 0 ? (
+              <button
+                type="button"
+                onClick={prev}
+                className="text-xs font-medium text-ink-muted hover:text-brand"
+              >
+                ← Kembali
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={stop}
+              className="text-xs font-medium text-ink-muted hover:text-brand"
+            >
+              Lewati tutorial
+            </button>
+          </div>
           {step.advance === "button" ? (
             <button
               type="button"
@@ -336,7 +369,13 @@ export default function TutorialOverlay() {
               {stepNumber === totalSteps ? "Selesai" : "Lanjut"}
             </button>
           ) : (
-            <span className="text-xs font-medium text-brand">Klik elemen yang disorot →</span>
+            // Not a button — it's a hint pointing at the spotlighted
+            // element itself (styled muted, not link-colored, so it
+            // doesn't look pressable; Jo tried clicking it expecting it to
+            // do something).
+            <span className="text-right text-xs font-medium italic text-ink-muted">
+              Klik langsung elemen yang disorot di halaman
+            </span>
           )}
         </div>
       </div>
