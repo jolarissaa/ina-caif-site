@@ -433,7 +433,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "dasar-1",
     regalkesForm: "A",
-    freeTemplateUrl: "https://drive.google.com/file/d/1brVQYHWaYArYn13RCypmiCLIHfhSu1B7/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1OFnSMvXMdv4G3YBBZpkcP8hhpI6CF_Qq/view?usp=sharing",
     categoryId: "dasar-perangkat-lunak",
     title: "Bangun sistem manajemen mutu (SMM) yang mencakup struktur kepemimpinan, proses pendukung siklus hidup, dan proses pengembangan.",
     explanation:
@@ -467,7 +467,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "dasar-2",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/13Bq_dIKJHZCrWQmbq8twwJubJxmVJkGE/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1vzcS2bUqI29mDnV5ntDP1HOxMBRg6lOH/view?usp=sharing",
     categoryId: "dasar-perangkat-lunak",
     title: "Susun Dokumen Verifikasi dan Validasi Perangkat Lunak dengan lima komponen wajib.",
     explanation:
@@ -510,7 +510,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "dasar-3",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/1vF78OoA1bOmY000nbnItOIJN3Ght-n1R/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1hshsnbLh7vhUlshpm91CbTHNLGn9T3ty/view?usp=sharing",
     categoryId: "dasar-perangkat-lunak",
     title: "Jika perangkat terhubung ke sistem, jaringan, atau internet lain, dokumentasikan mekanisme pertukaran data beserta analisis risikonya.",
     explanation:
@@ -524,7 +524,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "dasar-4",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/1hTeDm1HMmXxfV5rUJIPqNXCKZH_p4pvA/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/13i8ulaJ9HwRq1dp3MqLC-_MTndkGvQ2l/view?usp=sharing",
     categoryId: "dasar-perangkat-lunak",
     title: "Susun dokumen hasil analisis manajemen risiko mengikuti empat tahap: identifikasi hingga pemantauan efektivitas kontrol.",
     explanation:
@@ -570,7 +570,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "dasar-5",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/1nmG7QXNJOVG6z9rUMNnNnOKdSpvdJO_g/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1osrUzL9ngfDKt54GnP1dE2Ys9qlxXFWu/view?usp=sharing",
     categoryId: "dasar-perangkat-lunak",
     title: "Pastikan siklus hidup pengembangan perangkat lunak mengacu pada IEC 62304 atau standar internasional setara.",
     explanation:
@@ -616,7 +616,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "ai-1",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/18RwX0KvUDXL7HTXU9akxrDmmL60cikCb/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/10Nc_kWDzxMqRlwmUyK4I8nvCrvf6b8Th/view?usp=sharing",
     categoryId: "kecerdasan-buatan",
     title: "Jelaskan jenis data input, kriteria pemilihan, dan metode pra-pemrosesan dataset.",
     explanation:
@@ -631,7 +631,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "ai-2",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/1rzVq8WdLQhVyoLi86R4lcPHIe_p4Newt/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1-e3_YsU9ee69ZyTYqOfhoCsawNSsaQNN/view?usp=sharing",
     categoryId: "kecerdasan-buatan",
     title: "Dokumentasikan sumber, ukuran, komposisi, dan pembagian dataset pelatihan/validasi/pengujian, termasuk mitigasi bias.",
     explanation:
@@ -646,7 +646,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "ai-3",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/1qQXvqW1ErghhYU6DpiYPtmAcbQhUJ2Pl/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/18WFADvjgx3TUZJYLaVBpqRnGoo5DO3I6/view?usp=sharing",
     categoryId: "kecerdasan-buatan",
     title: "Jelaskan arsitektur model AI, kesesuaiannya dengan tujuan penggunaan, serta keterbatasan dan langkah mitigasinya.",
     explanation:
@@ -661,7 +661,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "ai-4",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/1SuBENSTAzbAzH9dVTuY2JMMJInidvMEs/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1HALEFnXTgCJo7_pfJtrlbUHvNSdwtYwd/view?usp=sharing",
     categoryId: "kecerdasan-buatan",
     title: "Sertakan hasil evaluasi kinerja model dengan metrik baku: akurasi, confusion matrix, kurva pembelajaran, dan AUC.",
     explanation:
@@ -676,7 +676,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "ai-5",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/1uCbwL8Oh5qw_iZhSZGK05EsFfHTJH56h/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1xL4AmO6n_ifrTPiUh9hmpbDiKPEm6gKz/view?usp=sharing",
     categoryId: "kecerdasan-buatan",
     title: "Susun protokol dan laporan pengujian verifikasi dan validasi, termasuk batas penerimaan dan deteksi anomali.",
     explanation:
@@ -691,7 +691,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "ai-6",
     regalkesForm: "B",
-    freeTemplateUrl: "https://drive.google.com/file/d/1kgYnrd9XWo2mFTsU1eqRvTLcNymPnwch/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/15vD3a3f7pGUzKC0LwlSvrYX9hFqvr4F8/view?usp=sharing",
     categoryId: "kecerdasan-buatan",
     title: "Dokumentasikan alur kerja penggunaan, cara interpretasi keluaran, dan mekanisme intervensi manusia.",
     explanation:
@@ -708,7 +708,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "lanjutan-1",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/1cmlBZIQ5OtEXrLwv_Hq4KqayI3iTGwt4/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1fC0Zvd_JlsKaB0X8WdF3ETz_ehsacUNR/view?usp=sharing",
     categoryId: "pembelajaran-berkelanjutan-generatif",
     title: "Jika model terus belajar pascapenerapan, dokumentasikan proses continuous machine learning secara lengkap.",
     explanation:
@@ -816,7 +816,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "klinis-2",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/1Hp3EW0v5qDVH5LIC8RFKEeHc2UXKTUko/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1Y2a8cNxtuZPiqp3UXwCh0T1NxjJ4Gn7d/view?usp=sharing",
     categoryId: "bukti-validasi-klinis",
     title: "Susun Dokumen Bukti Klinis sesuai kombinasi yang disyaratkan: kajian literatur, perbandingan produk sejenis, dan/atau uji klinik.",
     explanation:
@@ -852,7 +852,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "klinis-3",
     regalkesForm: "C",
-    freeTemplateUrl: "https://drive.google.com/file/d/1c1hQSirRoyyirb7qWP757XV6fK6cbyAQ/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1ZcFj_yxnTbMFMNiEmSahPUHRmTKFzqeH/view?usp=sharing",
     categoryId: "bukti-validasi-klinis",
     title: "Jika produk impor dan memenuhi kriteria pemicu, siapkan validasi klinis lokal untuk populasi Indonesia.",
     explanation:
@@ -869,7 +869,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "penandaan-1",
     regalkesForm: "D",
-    freeTemplateUrl: "https://drive.google.com/file/d/1F5Q4dwAjou6z3SOgTPowxWLH6zIfixFH/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/115zX1KmiF__EyzqiEfx7gIvke-MDskK_/view?usp=sharing",
     categoryId: "penandaan",
     title: "Cantumkan identitas produk pada label: nama produk, nomor versi perangkat lunak, dan identitas pemilik produk.",
     explanation: "Informasi identitas ini wajib tampil pada label maupun antarmuka perangkat lunak itu sendiri.",
@@ -882,7 +882,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "penandaan-2",
     regalkesForm: "D",
-    freeTemplateUrl: "https://drive.google.com/file/d/1Uk63QH-nJDkxw5pYduYodWHB2pkClcJy/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1qFeSTRKNDR7S2XmNypvJ_PiSaFHy-DKy/view?usp=sharing",
     categoryId: "penandaan",
     title: "Sertakan informasi keselamatan dan penggunaan yang jelas dan mudah dipahami.",
     explanation:
@@ -896,7 +896,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "penandaan-3",
     regalkesForm: "D",
-    freeTemplateUrl: "https://drive.google.com/file/d/1MLpF9s8g18E8vFGHlGgCEpRYKldKVr91/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1PwLAQBA9lRSEf5nSFqHKO7ltxUbYxzi0/view?usp=sharing",
     categoryId: "penandaan",
     title: "Jika produk tidak berbentuk fisik, sertakan tangkapan layar antarmuka beserta URL dan prosedur unduh, instalasi, dan penggunaan.",
     explanation:
@@ -1045,7 +1045,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "data-3",
     regalkesForm: "A",
-    freeTemplateUrl: "https://drive.google.com/file/d/15zE_-rA7UnnAr4jy55S7YgvGdWxAT95A/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/1yhiKmFS8-dUxJBwd0ZCC12YgOeNM9p21/view?usp=sharing",
     categoryId: "interoperabilitas-data",
     title: "Terapkan dasar hukum pemrosesan data pribadi yang sah sesuai UU Pelindungan Data Pribadi.",
     explanation:
@@ -1095,7 +1095,7 @@ export const checklistItems: ChecklistItem[] = [
   {
     id: "pasca-1",
     regalkesForm: "E",
-    freeTemplateUrl: "https://drive.google.com/file/d/1dLnm1Tga048ylNiJz71QZ_YMKZFwxORJ/view?usp=sharing",
+    freeTemplateUrl: "https://drive.google.com/file/d/10H0eP1YRXj-jwXwNHaRkU9PTUqYwo-Xo/view?usp=sharing",
     categoryId: "pasca-pemasaran",
     title: "Siapkan proses penanganan keluhan: pengumpulan, pencatatan, evaluasi, dan tindak lanjut.",
     explanation: "Termasuk pelacakan kejadian tidak diinginkan (KTD) dan Field Safety Corrective Action (FSCA).",

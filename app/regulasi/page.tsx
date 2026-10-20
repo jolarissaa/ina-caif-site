@@ -162,7 +162,7 @@ export default function RegulasiPage() {
         </Link>
 
         <a
-          href="https://drive.google.com/file/d/1X5w6Vez5SDucbuCocN2BtaI6DMRGD9zx/view?usp=sharing"
+          href="https://drive.google.com/file/d/12sykagQ3pXe2F9imIN2LMfupEjh15Fj9/view?usp=sharing"
           target="_blank"
           rel="noopener noreferrer"
           className="mt-4 flex items-center justify-between gap-4 rounded-lg border border-accent bg-accent/5 p-6 hover:bg-accent/10"
