@@ -72,6 +72,44 @@ body > main {
   }
 }
 
+/* Used by the tutorial's "form-explainer" intro step (TutorialOverlay) to
+   point at the Form A–E tab row on Jo's real e-Regalkes screenshot — a
+   pulsing highlight box plus a bouncing arrow, both drawn live on the page
+   (not baked into the image itself), positioned over the screenshot with
+   percentage coordinates so they track it at any display width. */
+@keyframes tutorial-highlight-box {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(217, 83, 27, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(217, 83, 27, 0);
+  }
+}
+@keyframes tutorial-highlight-arrow {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+.tutorial-highlight-box {
+  animation: tutorial-highlight-box 1.6s ease-in-out infinite;
+}
+.tutorial-highlight-arrow {
+  animation: tutorial-highlight-arrow 1.1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tutorial-highlight-box,
+  .tutorial-highlight-arrow {
+    animation: none;
+  }
+}
+
 /* Print styles used by /checklist/cetak, the PDF export view.
    Visiting that page and using the browser's Print (Save as PDF) gives a
    clean, single-column document with no navigation or interactive chrome. */
