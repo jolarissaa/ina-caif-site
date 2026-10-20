@@ -28,6 +28,7 @@ export const PRODUCT_SCOPED_BASE_KEYS = [
   "ina-caif-breakdown-v1",
   "ina-caif-ethics-context-v1",
   "ina-caif-evidence-links-v1",
+  "ina-caif-ethics-assessment-v1",
 ];
 
 const DEFAULT_PRODUCT: Product = { id: "default", name: "Produk Saya", createdAt: 0 };

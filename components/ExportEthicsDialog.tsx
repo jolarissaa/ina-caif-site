@@ -47,8 +47,10 @@ export default function ExportEthicsDialog({ open, onClose, productId = "default
             <p className="mt-2 text-sm leading-[22px] text-ink-muted">
               Jika ya, ringkasan yang diekspor akan dipersempit — hanya butir yang relevan bagi
               penilaian etik (Bab IV.A, Etika & GMLP) yang disertakan, bukan seluruh checklist
-              administratif izin edar. Anda juga bisa melengkapi beberapa informasi singkat
-              terlebih dahulu agar komite etik memiliki konteks sebelum membaca ringkasannya.
+              administratif izin edar. Jika sudah diisi di halaman checklist, penilaian mandiri
+              terhadap Standar Kelaikan Etik dan Aspek Etik AI Kesehatan (KEPPKN 2021) juga akan
+              disertakan. Anda juga bisa melengkapi beberapa informasi singkat terlebih dahulu
+              agar komite etik memiliki konteks sebelum membaca ringkasannya.
             </p>
             <p className="mt-3 text-xs text-ink-muted">
               Ringkasan ini melengkapi, bukan menggantikan, protokol penelitian resmi yang

@@ -11,6 +11,7 @@ import CategoryProgressBar from "@/components/CategoryProgressBar";
 import CategoryProgressPanel from "@/components/CategoryProgressPanel";
 import ClassificationSummary from "@/components/ClassificationSummary";
 import EvidenceTierBadges from "@/components/EvidenceTierBadges";
+import EthicsStandardsPanel from "@/components/EthicsStandardsPanel";
 import Link from "next/link";
 import {
   categories,
@@ -216,6 +217,17 @@ export default function ChecklistPage() {
                 </button>
               </span>
             </div>
+
+            {/* Only relevant once the visitor has chosen "Komite Etik" as
+                this product's purpose — per Jo: the ethics export should
+                hold up against everything the real national ethics
+                pedoman (KEPPKN 2021) asks for, adapted for an AI product,
+                not just general reasoning about what seems useful. Filled
+                in here once, then printed read-only in the "Ekspor untuk
+                Komite Etik" view. */}
+            {answers.purpose === "etik" ? (
+              <EthicsStandardsPanel productId={activeProductId} />
+            ) : null}
 
             <div className="lg:hidden">
               <div className="mt-6 flex items-center justify-between gap-4">

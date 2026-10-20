@@ -16,6 +16,13 @@ import { useEthicsContext } from "@/lib/useEthicsContext";
 import { useQualifyingAnswers } from "@/lib/useQualifyingAnswers";
 import { useBreakdownState } from "@/lib/useBreakdownState";
 import { useEvidenceLinks } from "@/lib/useEvidenceLinks";
+import { useEthicsAssessment } from "@/lib/useEthicsAssessment";
+import {
+  AI_ETHICS_ASPECTS,
+  CORE_ETHICS_STANDARDS,
+  ETHICS_STATUS_LABEL,
+  type EthicsStandardDef,
+} from "@/lib/ethicsStandards";
 import { useProducts } from "@/lib/useProducts";
 import StatusPill from "@/components/StatusPill";
 import {
@@ -53,6 +60,7 @@ function ChecklistCetakContent() {
   const { answers } = useQualifyingAnswers(activeProductId);
   const { isChecked } = useBreakdownState(activeProductId);
   const { getLink } = useEvidenceLinks(activeProductId);
+  const { getValue: getEthicsStandardValue } = useEthicsAssessment(activeProductId);
   const searchParams = useSearchParams();
   const includeEthicsContext = searchParams.get("etik") === "1";
 
@@ -107,9 +115,11 @@ function ChecklistCetakContent() {
         </p>
         {includeEthicsContext ? (
           <p className="mt-2 text-xs italic text-ink-muted">
-            Hanya menampilkan butir yang relevan bagi penilaian etik (Bab IV.A — Etika & Good
-            Machine Learning Practice). Butir administratif dan persyaratan izin edar lainnya
-            tidak disertakan di sini.
+            Disusun mengacu pada Pedoman dan Standar Etik Penelitian dan Pengembangan Kesehatan
+            Nasional (KEPPKN, Kemenkes RI, 2021), disesuaikan untuk produk AI kesehatan. Hanya
+            menampilkan butir checklist yang relevan bagi penilaian etik (Bab IV.A — Etika &amp;
+            Good Machine Learning Practice); butir administratif dan persyaratan izin edar
+            lainnya tidak disertakan di sini.
           </p>
         ) : null}
       </header>
@@ -160,6 +170,32 @@ function ChecklistCetakContent() {
           <p className="mt-3 text-xs italic text-ink-muted">
             Dokumen ini bersifat pelengkap ringkas dan tidak menggantikan protokol penelitian
             resmi yang diajukan ke komite etik (KEPKN).
+          </p>
+        </section>
+      ) : null}
+
+      {includeEthicsContext ? (
+        <section className="mt-6 border-b border-border-subtle pb-6">
+          <h2 className="font-display text-lg font-semibold text-ink">
+            Standar Kelaikan Etik Penelitian
+          </h2>
+          <p className="mt-1 text-xs text-ink-muted">
+            Enam standar inti dari pedoman KEPPKN 2021, dinilai mandiri oleh pengembang.
+          </p>
+          <EthicsStandardTable defs={CORE_ETHICS_STANDARDS} getValue={getEthicsStandardValue} />
+
+          <h2 className="mt-6 font-display text-lg font-semibold text-ink">
+            Aspek Etik Penelitian Kecerdasan Buatan (AI) Kesehatan
+          </h2>
+          <p className="mt-1 text-xs text-ink-muted">
+            Dirangkum dari Bab V.B.4 pedoman KEPPKN 2021, bagian yang membahas AI secara khusus.
+          </p>
+          <EthicsStandardTable defs={AI_ETHICS_ASPECTS} getValue={getEthicsStandardValue} />
+
+          <p className="mt-3 text-xs italic leading-[18px] text-ink-muted">
+            Kerangka ini disesuaikan untuk produk perangkat lunak/AI — standar dalam pedoman asli
+            yang khusus untuk desain uji klinik dengan subjek manusia langsung (mis. randomisasi,
+            plasebo, bahan biologik tersimpan) tidak disertakan karena tidak relevan di sini.
           </p>
         </section>
       ) : null}
@@ -266,6 +302,24 @@ function ChecklistCetakContent() {
           );
         })}
       </div>
+
+      {includeEthicsContext ? (
+        <section className="mt-8 border-t border-border-subtle pt-6">
+          <h2 className="font-display text-lg font-semibold text-ink">Komitmen Etik</h2>
+          <p className="mt-2 text-sm leading-[22px] text-ink">
+            Pengembang menyatakan bahwa prinsip-prinsip dalam Pedoman dan Standar Etik Penelitian
+            dan Pengembangan Kesehatan Nasional (KEPPKN, Kementerian Kesehatan RI, 2021) telah
+            dipertimbangkan dalam pengembangan
+            {activeProduct ? ` ${activeProduct.name}` : " produk ini"}, sejauh relevan untuk
+            produk perangkat lunak/AI kesehatan yang bukan merupakan penelitian subjek manusia
+            langsung.
+          </p>
+          <p className="mt-3 text-xs italic text-ink-muted">
+            Ringkasan ini melengkapi, bukan menggantikan, protokol atau pernyataan komitmen etik
+            resmi yang diajukan ke komite etik institusi Anda atau melalui portal KEPKN.
+          </p>
+        </section>
+      ) : null}
     </main>
   );
 }
@@ -277,5 +331,37 @@ function ContextRow({ label, value }: { label: string; value: string }) {
       <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{label}</p>
       <p className="text-sm text-ink">{value}</p>
     </div>
+  );
+}
+
+function EthicsStandardTable({
+  defs,
+  getValue,
+}: {
+  defs: EthicsStandardDef[];
+  getValue: (id: string) => { status: "ya" | "tidak" | "na" | null; note: string };
+}) {
+  return (
+    <ul className="mt-3 space-y-3">
+      {defs.map((def) => {
+        const value = getValue(def.id);
+        return (
+          <li key={def.id} className="border-t border-border-subtle pt-3">
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-sm leading-[22px] text-ink">{def.label}</p>
+              <span className="flex-shrink-0 rounded-pill bg-surface-alt px-2.5 py-1 text-xs font-medium text-ink">
+                {value.status ? ETHICS_STATUS_LABEL[value.status] : "Belum dinilai"}
+              </span>
+            </div>
+            <p className="mt-1 text-xs leading-[18px] text-ink-muted">{def.helper}</p>
+            {value.note ? (
+              <p className="mt-1 text-xs leading-[18px] text-ink">
+                Catatan: {value.note}
+              </p>
+            ) : null}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
