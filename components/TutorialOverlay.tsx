@@ -185,29 +185,20 @@ export default function TutorialOverlay() {
             </div>
             <h3 className="mt-1 font-display text-base font-semibold text-ink">{step.title}</h3>
 
-            {/* Illustrative mockup, not a real screenshot — the actual
-                e-Regalkes interface (with real screenshots of Form A–E and
-                the file-upload step) is one click away via the Kemenkes PDF
-                guide linked below. */}
-            <div className="mt-3 rounded-md border border-dashed border-border-subtle bg-surface-alt p-3">
-              <div className="flex flex-wrap items-center gap-1.5">
-                {["A", "B", "C", "D", "E"].map((label) => (
-                  <span
-                    key={label}
-                    className="flex h-8 w-8 items-center justify-center rounded-md border border-border-subtle bg-surface text-xs font-semibold text-ink-muted"
-                  >
-                    {label}
-                  </span>
-                ))}
-                <span aria-hidden className="mx-1 text-ink-muted">
-                  +
-                </span>
-                <span className="inline-flex h-8 items-center rounded-md border border-border-subtle bg-surface px-2.5 text-[11px] font-medium text-ink-muted">
-                  Pilih File ↑
-                </span>
-              </div>
-              <p className="mt-2 text-[11px] leading-[16px] text-ink-muted">
-                Ilustrasi struktur formulir e-Regalkes, bukan tangkapan layar asli.
+            {/* Real e-Regalkes screenshot (from Jo, cropped out of the
+                Kemenkes guide PDF — see KEMENKES_SUBMISSION_GUIDE_URL below
+                for the source), with a highlight box + arrow drawn onto the
+                image pointing at the Form A–E tab row, so this reads as "this
+                is what you'll actually see" rather than an abstract mockup. */}
+            <div className="mt-3 overflow-hidden rounded-md border border-border-subtle bg-surface-alt">
+              <img
+                src="/images/form-a-e-screenshot.png"
+                alt="Tangkapan layar e-Regalkes menunjukkan tab Form A, B, C, D, E"
+                className="w-full"
+              />
+              <p className="px-3 py-2 text-[11px] leading-[16px] text-ink-muted">
+                Tangkapan layar asli dari pedoman Kemenkes — tab Form A–E inilah yang dirujuk
+                badge "Form A/B/C/D/E Regalkes" di checklist ini.
               </p>
             </div>
 

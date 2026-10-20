@@ -252,10 +252,31 @@ export default function ChecklistPage() {
                       </h3>
                       <p className="mt-2 max-w-2xl text-sm leading-[22px] text-ink-muted">
                         Keputusan akhir tetap ada pada Kemenkes dan komite etik penelitian
-                        kesehatan (KEPKN). Setelah checklist ini cukup lengkap, pelajari cara
-                        mengajukan izin edar, atau siapkan ringkasan untuk komite etik bila
-                        produk ini juga sedang diteliti.
+                        kesehatan (KEPKN). Sejak Februari 2022, pengajuan izin edar alat
+                        kesehatan dimulai dari OSS RBA (oss.go.id) dulu, baru diteruskan ke
+                        sistem Regalkes Kemenkes untuk Form A–E-nya.
                       </p>
+
+                      <div className="mt-3 max-w-md overflow-hidden rounded-md border border-border-subtle">
+                        <img
+                          src="/images/oss-rba-flow.png"
+                          alt="Alur perizinan: Pelaku Usaha mengajukan lewat OSS, diteruskan ke Regalkes, lalu disetujui atau ditolak"
+                          className="w-full"
+                        />
+                      </div>
+                      <p className="mt-2 max-w-2xl text-sm leading-[22px] text-ink-muted">
+                        Lihat{" "}
+                        <a
+                          href="/docs/tata-cara-oss-rba.pdf"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-medium text-brand hover:underline"
+                        >
+                          alurnya lewat OSS RBA
+                        </a>{" "}
+                        dulu, baru pelajari pedoman lengkap Form A–E lewat tombol di bawah.
+                      </p>
+
                       <div className="mt-4 flex flex-wrap gap-3">
                         <a
                           href={KEMENKES_SUBMISSION_GUIDE_URL}
